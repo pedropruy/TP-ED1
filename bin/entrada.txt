@@ -1,0 +1,31 @@
+E L
+A Forca
+A Carisma
+A Furtividade
+I MachadoGenerico
+I BarbaPosticaDePrestigio
+I BotasSilenciosas
+I ElmoDoPrimo
+M 0 0 5
+M 1 1 7
+M 1 2 -3
+M 2 2 4
+M 3 0 2
+M 3 1 2
+H Blibblon
+H Grunilda
+LI 1
+LA 2
+F 0 0
+F 1 1
+F 0 3
+Z 2
+LH 0
+LH 1
+Q 0 3 2 PODER 1.00 SINERGIA 3.00
+D 0
+LH 0
+E T
+Z 5
+LH 0
+Q 1 3 3 PODER 1.00 EQUILIBRIO 1.00 SINERGIA 1.00
