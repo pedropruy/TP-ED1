@@ -12,7 +12,7 @@ Fila<TipoItem>::~Fila() {
 }
 
 template<typename TipoItem>
-int Fila<TipoItem>::Get_Tamanho() { return tamanho; }
+int Fila<TipoItem>::Get_Tamanho() const { return tamanho; }
 
 template<typename TipoItem>
 void Fila<TipoItem>::Enfileira(TipoItem item) {

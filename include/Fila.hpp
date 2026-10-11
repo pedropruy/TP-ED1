@@ -7,7 +7,7 @@ template<typename TipoItem>
 class Fila {
     public:
         Fila(); ~Fila();
-        int Get_Tamanho();
+        int Get_Tamanho() const;
         void Enfileira(TipoItem item);
         TipoItem Desenfileira();
         void Limpa();

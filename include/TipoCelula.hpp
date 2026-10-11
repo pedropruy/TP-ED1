@@ -20,20 +20,6 @@ class TipoCelula {
         friend class Pilha<TipoItem>;
 };
 
-template<typename TipoItem>
-class TipoCelulado {
-    public:
-        TipoCelulado();
-
-    private:
-        TipoItem item;
-        TipoItem item;
-        TipoCelula<TipoItem>* prox;
-
-        friend class Fila<TipoItem>;
-        friend class Pilha<TipoItem>;
-};
-
 #include "TipoCelula.tpp"
 
 #endif

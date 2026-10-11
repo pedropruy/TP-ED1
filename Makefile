@@ -1,6 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I./include
-
+CXXFLAGS = -std=c++11 -Wall -I./include 
 #-fsanitize=address -g -fno-omit-frame-pointer
 
 SRC_DIR = ./src
@@ -8,7 +7,7 @@ INCLUDE_DIR = ./include
 OBJ_DIR = ./obj
 OUT_DIR = ./bin
 
-TARGET = $(OUT_DIR)/main
+TARGET = $(OUT_DIR)/tp1.out
 
 OBJ = $(OBJ_DIR)/main.o \
 	  $(OBJ_DIR)/Item.o \
