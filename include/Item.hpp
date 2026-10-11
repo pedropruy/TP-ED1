@@ -8,8 +8,7 @@ class Item {
         unsigned int id;
         std::string nome;
     public:
-        Item(unsigned int _id, std::string _nome);
-        Item();
+        Item(unsigned int _id, std::string _nome); Item();
         Item(const Item &i);
         Item& operator= (const Item &i);
         ~Item();

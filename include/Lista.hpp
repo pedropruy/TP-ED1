@@ -19,7 +19,7 @@ class Lista {
         void Limpa();
     private:
         int tamanho;
-        int MAXTAM;
+        int capacidade;
         TipoItem* itens;
         void Dobrar_Tamanho();
 };

@@ -8,7 +8,7 @@
 
 int main() {
     int tam = 8;
-    Lista<Item> *LI = new Lista<Item>();
+    /*Lista<Item> *LI = new Lista<Item>();
     Lista<Atributo> *LA = new Lista<Atributo>(); 
     Lista<Aventureiro> *LE = new Lista<Aventureiro>(); 
 
@@ -32,7 +32,25 @@ int main() {
 
     delete LI;
     delete LA;
-    delete LE;
+    delete LE;*/
+
+    Fila<Aventureiro> *PI = new Fila<Aventureiro>();
+
+    std::string entrada;
+    for(int i = 0; i < tam; i++) {
+        std::getline(std::cin >> std::ws, entrada);
+        Aventureiro aventureiro(i, entrada);
+        for (int j = 0; j <= i; j++)
+            aventureiro.Equipar_Item(j);
+        PI->Enfileira(aventureiro);
+    }
+
+    PI->Desenfileira();
+
+    try{ PI->Imprime();
+    } catch (char const* e) { std::cout << e << std::endl; }
+
+    delete PI;
 
     return 0;
 }

@@ -3,15 +3,6 @@
 
 Aventureiro::Aventureiro(unsigned int _id, const std::string& _nome) : id(_id), nome(_nome) {}
 Aventureiro::Aventureiro() : id(-1), nome("ERRO") {}
-Aventureiro::Aventureiro(const Aventureiro &a) : id(a.id), nome(a.nome), build(a.build) {}
-Aventureiro& Aventureiro::operator= (const Aventureiro &a) {
-    if (this == &a) return *this;
-    this->id = a.id;
-    this->nome = a.nome;
-    this->build = a.build;
-    return *this;
-}
-Aventureiro::~Aventureiro() {}
 
 unsigned int Aventureiro::Get_Id() const { return id; }
 std::string Aventureiro::Get_Nome() const { return nome; }

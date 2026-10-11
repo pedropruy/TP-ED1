@@ -10,11 +10,20 @@ class Fila {
         int Get_Tamanho() const;
         void Enfileira(TipoItem item);
         TipoItem Desenfileira();
+        void Imprime();
         void Limpa();
     private:
-        TipoCelula<TipoItem>* frente;
-        TipoCelula<TipoItem>* tras;
+        bool encadeada = false;
         int tamanho;
+        // Fila Encadeada
+        TipoCelula<TipoItem>* celula_frente;
+        TipoCelula<TipoItem>* celula_tras;
+        // Fila Arranjo
+        int capacidade;
+        int indice_frente;
+        int indice_tras;
+        TipoItem* itens;
+        void Dobrar_Tamanho();
 };
 
 #include "Fila.tpp"

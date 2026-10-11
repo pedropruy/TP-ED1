@@ -1,6 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I./include 
-#-fsanitize=address -g -fno-omit-frame-pointer
+CXXFLAGS = -std=c++11 -Wall -I./include -fsanitize=address -g -fno-omit-frame-pointer
 
 SRC_DIR = ./src
 INCLUDE_DIR = ./include

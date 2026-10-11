@@ -12,11 +12,19 @@ class Pilha {
         int Get_Tamanho() const;
         void Empilha(TipoItem item);
         TipoItem Desempilha();
+        void Imprime();
         void Limpa();
     private:
-        void Copia(const Pilha& p);
-        TipoCelula<TipoItem>* topo;
+        bool encadeada = true;
         int tamanho;
+        void Copia(const Pilha& p);
+        // Pilha Encadeada
+        TipoCelula<TipoItem>* topoE;
+        // Pilha Arranjo
+        int capacidade;
+        TipoItem* itens;
+        int topoA;
+        void Dobrar_Tamanho();
 };
 // O(n) = Destrutor e Limpa (mas mesmo assim é melhor implementação)
 

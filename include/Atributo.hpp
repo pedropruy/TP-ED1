@@ -8,8 +8,7 @@ class Atributo {
         unsigned int id;
         std::string nome;
     public:
-        Atributo(unsigned int _id, std::string _nome);
-        Atributo();
+        Atributo(unsigned int _id, std::string _nome); Atributo();
         Atributo(const Atributo &a);
         Atributo& operator= (const Atributo &a);
         ~Atributo();

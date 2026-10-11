@@ -10,11 +10,7 @@ class Aventureiro {
         std::string nome;
         Pilha<unsigned int> build;
     public:
-        Aventureiro(unsigned int _id, const std::string& _nome);
-        Aventureiro();
-        Aventureiro(const Aventureiro &a);
-        Aventureiro& operator= (const Aventureiro &a);
-        ~Aventureiro();
+        Aventureiro(unsigned int _id, const std::string& _nome); Aventureiro();
         unsigned int Get_Id() const;
         std::string Get_Nome() const;
         int Get_Tamanho_Build() const;

@@ -3,8 +3,8 @@
 template<typename TipoItem>
 Lista<TipoItem>::Lista() {
     tamanho = 0;
-    MAXTAM = 1;
-    itens = new TipoItem[MAXTAM];
+    capacidade = 1;
+    itens = new TipoItem[capacidade];
 }
 
 template<typename TipoItem>
@@ -28,7 +28,7 @@ void Lista<TipoItem>::Set_Item(const TipoItem& item, int pos) {
 
 template<typename TipoItem>
 void Lista<TipoItem>::Insere_Inicio(const TipoItem& item) {
-    if (tamanho == MAXTAM) Dobrar_Tamanho();
+    if (tamanho == capacidade) Dobrar_Tamanho();
     tamanho++;
     int i;
     for (i = tamanho-1; i > 0; i--) itens[i] = itens[i-1];
@@ -37,7 +37,7 @@ void Lista<TipoItem>::Insere_Inicio(const TipoItem& item) {
 
 template<typename TipoItem>
 void Lista<TipoItem>::Insere_Final(const TipoItem& item) {
-    if (tamanho == MAXTAM) Dobrar_Tamanho();
+    if (tamanho == capacidade) Dobrar_Tamanho();
     itens[tamanho] = item;
     tamanho++;
 }
@@ -45,7 +45,7 @@ void Lista<TipoItem>::Insere_Final(const TipoItem& item) {
 template<typename TipoItem>
 void Lista<TipoItem>::Insere_Posicao(const TipoItem& item, int pos) {
     if ((pos > tamanho+1) || (pos <= 0)) throw "ERRO: Posicao Invalida!";
-    if (tamanho == MAXTAM) Dobrar_Tamanho();
+    if (tamanho == capacidade) Dobrar_Tamanho();
     pos--; // posição no vetor = pos-1
     int i;
     for (i = tamanho; i > pos; i--) itens[i] = itens[i-1];
@@ -107,13 +107,13 @@ void Lista<TipoItem>::Limpa() { tamanho = 0; }
 
 template<typename TipoItem>
 void Lista<TipoItem>::Dobrar_Tamanho() {
-    MAXTAM *= 2;
-    TipoItem* novo_itens = new TipoItem[MAXTAM]; 
+    int nova_capacidade = capacidade*2;
+    TipoItem* novo_itens = new TipoItem[nova_capacidade]; 
     
-    for (int i = 0; i < tamanho; i++) {
+    for (int i = 0; i < tamanho; i++)
         novo_itens[i] = itens[i];
-    }
     
     delete[] itens;
+    capacidade = nova_capacidade;
     itens = novo_itens;
 }
