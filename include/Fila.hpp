@@ -8,22 +8,32 @@ class Fila {
     public:
         Fila(); ~Fila();
         int Get_Tamanho() const;
-        void Enfileira(TipoItem item);
+        void Enfileira(const TipoItem& item);
         TipoItem Desenfileira();
         void Imprime();
         void Limpa();
     private:
-        bool encadeada = false;
         int tamanho;
-        // Fila Encadeada
-        TipoCelula<TipoItem>* celula_frente;
-        TipoCelula<TipoItem>* celula_tras;
-        // Fila Arranjo
         int capacidade;
-        int indice_frente;
-        int indice_tras;
+        int frente;
+        int tras;
         TipoItem* itens;
         void Dobrar_Tamanho();
+};
+
+template<typename TipoItem>
+class FilaEncadeada {
+    public:
+        FilaEncadeada(); ~FilaEncadeada();
+        int Get_Tamanho() const;
+        void Enfileira(const TipoItem& item);
+        TipoItem Desenfileira();
+        void Imprime();
+        void Limpa();
+    private:
+        int tamanho;
+        TipoCelula<TipoItem>* frente;
+        TipoCelula<TipoItem>* tras;
 };
 
 #include "Fila.tpp"

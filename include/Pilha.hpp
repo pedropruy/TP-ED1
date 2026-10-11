@@ -10,23 +10,36 @@ class Pilha {
         Pilha(const Pilha &p);
         Pilha& operator= (const Pilha &p);
         int Get_Tamanho() const;
-        void Empilha(TipoItem item);
+        void Empilha(const TipoItem& item);
         TipoItem Desempilha();
         void Imprime();
         void Limpa();
     private:
-        bool encadeada = true;
+        bool encadeada = false;
         int tamanho;
         void Copia(const Pilha& p);
-        // Pilha Encadeada
-        TipoCelula<TipoItem>* topoE;
-        // Pilha Arranjo
         int capacidade;
         TipoItem* itens;
-        int topoA;
+        int topo;
         void Dobrar_Tamanho();
 };
-// O(n) = Destrutor e Limpa (mas mesmo assim é melhor implementação)
+
+template<typename TipoItem>
+class PilhaEncadeada {
+    public:
+        PilhaEncadeada(); ~PilhaEncadeada();
+        PilhaEncadeada(const PilhaEncadeada &p);
+        PilhaEncadeada& operator= (const PilhaEncadeada &p);
+        int Get_Tamanho() const;
+        void Empilha(const TipoItem& item);
+        TipoItem Desempilha();
+        void Imprime();
+        void Limpa();
+    private:
+        int tamanho;
+        void Copia(const PilhaEncadeada& p);
+        TipoCelula<TipoItem>* topo;
+};
 
 #include "Pilha.tpp"
 

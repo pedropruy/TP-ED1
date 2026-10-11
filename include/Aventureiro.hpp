@@ -4,6 +4,8 @@
 #include <string>
 #include "Pilha.hpp"
 #include "Item.hpp"
+
+#define Pilha PilhaEncadeada
 class Aventureiro {
     private:
         unsigned int id;

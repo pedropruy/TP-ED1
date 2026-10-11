@@ -3,9 +3,13 @@
 
 template<typename TipoItem>
 class Fila;
+template<typename TipoItem>
+class FilaEncadeada;
 
 template<typename TipoItem>
 class Pilha;
+template<typename TipoItem>
+class PilhaEncadeada;
 
 template<typename TipoItem>
 class TipoCelula {
@@ -17,7 +21,9 @@ class TipoCelula {
         TipoCelula<TipoItem>* prox;
 
         friend class Fila<TipoItem>;
+        friend class FilaEncadeada<TipoItem>;
         friend class Pilha<TipoItem>;
+        friend class PilhaEncadeada<TipoItem>;
 };
 
 #include "TipoCelula.tpp"
