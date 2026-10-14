@@ -1,5 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I./include -fsanitize=address -g -fno-omit-frame-pointer
+CXXFLAGS = -std=c++11 -Wall -I./include 
+# -fsanitize=address -g -fno-omit-frame-pointer
 
 SRC_DIR = ./src
 INCLUDE_DIR = ./include
@@ -11,7 +12,8 @@ TARGET = $(OUT_DIR)/tp1.out
 OBJ = $(OBJ_DIR)/main.o \
 	  $(OBJ_DIR)/Item.o \
 	  $(OBJ_DIR)/Atributo.o \
-	  $(OBJ_DIR)/Aventureiro.o
+	  $(OBJ_DIR)/Aventureiro.o \
+	  $(OBJ_DIR)/Matriz.o
 
 all: $(TARGET)
 
@@ -28,6 +30,10 @@ $(OBJ_DIR)/Atributo.o: $(SRC_DIR)/Atributo.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/Aventureiro.o: $(SRC_DIR)/Aventureiro.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/Matriz.o: $(SRC_DIR)/Matriz.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

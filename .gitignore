@@ -1,0 +1,8 @@
+# Arquivos .o
+obj/*
+
+# Executável
+bin/*
+
+# Comentários pessoais meus
+*.txt
