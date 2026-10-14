@@ -13,9 +13,17 @@ Lista<TipoItem>::~Lista() { delete[] itens; }
 template<typename TipoItem>
 int Lista<TipoItem>::Get_Tamanho() { return tamanho; }
 
+template<typename TipoItem>
+int Lista<TipoItem>::Get_Tamanho() const { return tamanho; }
 
 template<typename TipoItem>
 TipoItem& Lista<TipoItem>::Get_Item(int ind) {
+    if ((ind > tamanho-1) ||(ind < 0)) throw "Get_Item: Id Invalido!";
+    return itens[ind];
+}
+
+template<typename TipoItem>
+TipoItem& Lista<TipoItem>::Get_Item(int ind) const {
     if ((ind > tamanho-1) ||(ind < 0)) throw "Get_Item: Id Invalido!";
     return itens[ind];
 }

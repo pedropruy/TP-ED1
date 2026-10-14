@@ -1,21 +1,19 @@
 #include "Matriz.hpp"
 #include <iostream>
 
-MatrizCOO::MatrizCOO(int linhas_, int colunas_) {
-    l = linhas_; c = colunas_; /*tamanho = 0; tamanhoMAX = 4;
-    linhas = new int [tamanhoMAX];
-    colunas = new int [tamanhoMAX];
-    valores = new valor[tamanhoMAX];*/
-    tripletas = new Lista<Tripleta>();
-}
+MatrizCOO::MatrizCOO(int linhas_, int colunas_) : l(linhas_), c(colunas_) {}
 
 valor MatrizCOO::Get(int i, int j) const {
     if (i < 0 || i >= l || j < 0 || j >= c) throw "Posicao invalida!";
     bool achou = false;
     int pos = Busca_Binaria(i, j, achou);
-    
-    if (achou) return tripletas->Get_Item(pos-1).val;
+
+    if (achou) return tripletas.Get_Item(pos-1).val;
     return 0; // nao esta na lista: e zero
+}
+
+void MatrizCOO::Get_Dimensoes(int& lin, int& col) {
+    lin = this->l; col = this->c;
 }
 
 void MatrizCOO::Set(int i, int j, valor v) {
@@ -26,7 +24,7 @@ void MatrizCOO::Set(int i, int j, valor v) {
     if (achou) {
         if (v == 0) Remove_Elemento(pos);
         // pos-1, pois Get_Item é por id não posição
-        else tripletas->Get_Item(pos-1).val = v;
+        else tripletas.Get_Item(pos-1).val = v;
         return;
     }
     if (v != 0) Insere_Elemento(pos, i, j, v);
@@ -35,13 +33,52 @@ void MatrizCOO::Set(int i, int j, valor v) {
 void MatrizCOO::Adicionar_Linha() { l++; }
 void MatrizCOO::Adicionar_Coluna() { c++; }
 
+// Deve exigir que a matriz m seja recém-construida
+void MatrizCOO::Converter_Matriz(MatrizEncadeada& m) {
+    // Tenho que exigir que matriz m é compatível com a matriz atual
+    if (m.cabCol.Get_Tamanho() != this->c ||
+        m.cabLin.Get_Tamanho() != this->l) throw "Dimensoes invalidas!";
+
+    // Ponteiro ultCol será utilizado para associar durante o loop principal
+    Celula** ultCol = new Celula*[this->c];
+    for (int j = 0; j < this->c; j++)
+        ultCol[j] = m.cabCol.Get_Item(j);
+    
+    Celula* ultLin = nullptr;
+    int linAtual = -1;
+    // Esse const aqui para evitar cópias desnecessárias na variável tri
+    const Lista<Tripleta>& origem = tripletas;
+        
+    for (int i = 0; i < tripletas.Get_Tamanho(); i++) {
+        const Tripleta& tri = origem.Get_Item(i);
+                
+        Celula* nova = new Celula{tri.lin, tri.col, tri.val, nullptr, nullptr};
+        
+        // ASSOCIAÇÃO POR LINHA
+        if (tri.lin != linAtual) {
+            linAtual = tri.lin;
+            // Pegando a célula cabeça da linha
+            ultLin = m.cabLin.Get_Item(linAtual);
+        }
+        
+        ultLin->proxLin = nova; // Última linha liga a nova linha
+        ultLin = nova; // Atualiza quem é a última linha
+        
+        // ASSOCIAÇÃO POR COLUNA
+        ultCol[tri.col]->proxCol = nova; // Última coluna liga a nova coluna
+        ultCol[tri.col] = nova; // Atualiza quem é a última coluna
+    }
+    m.tamanho = tripletas.Get_Tamanho();
+    delete[] ultCol;
+}
+
 void MatrizCOO::Imprime() const {
     int id = 0; // proxima tripla a imprimir
     for (int i = 0; i < l; i++) {
         for (int j = 0; j < c; j++) {
-            if (id < tripletas->Get_Tamanho() && tripletas->Get_Item(id).lin == i
-                 && tripletas->Get_Item(id).col == j) {
-                std::cout << tripletas->Get_Item(id).val << " ";
+            if (id < tripletas.Get_Tamanho() && tripletas.Get_Item(id).lin == i
+                 && tripletas.Get_Item(id).col == j) {
+                std::cout << tripletas.Get_Item(id).val << " ";
                 id++;
             } else std::cout << "0 ";
         }
@@ -50,11 +87,11 @@ void MatrizCOO::Imprime() const {
 }
 
 int MatrizCOO::Busca_Binaria(int i, int j, bool& achou) const {
-    int meio; int esq = 1; int dir = tripletas->Get_Tamanho();
+    int meio; int esq = 1; int dir = tripletas.Get_Tamanho();
     
     while (esq <= dir) {
         meio = esq + (dir - esq) / 2;
-        Tripleta t = tripletas->Get_Item(meio-1);
+        Tripleta t = tripletas.Get_Item(meio-1);
         
         // Item está exatamente na posição meio
         if (t.lin == i && t.col == j) { achou = true; return meio; }
@@ -75,53 +112,48 @@ void MatrizCOO::Insere_Elemento(int pos, int i, int j, valor v) {
     Tripleta nova_tripla;
     nova_tripla.lin = i; nova_tripla.col = j; nova_tripla.val = v;
     
-    tripletas->Insere_Posicao(nova_tripla, pos); 
+    tripletas.Insere_Posicao(nova_tripla, pos); 
 }
 
-void MatrizCOO::Remove_Elemento(int pos) { tripletas->Remove_Posicao(pos); }
+void MatrizCOO::Remove_Elemento(int pos) { tripletas.Remove_Posicao(pos); }
 
 MatrizEncadeada::MatrizEncadeada(int li, int co) {
     if (li < 0 || co < 0) throw "Tamanho invalido!";
-    // l = li; c = co;
     tamanho = 0;
-    // cabLin = new Celula*[l];
-    cabLin = new Lista<Celula*>();
-    // cabCol = new Celula*[c];
-    cabCol = new Lista<Celula*>();
     for (int i = 0; i < li; i++)
-        cabLin->Insere_Final(new Celula{i, -1, 0, nullptr, nullptr});
-        //cabLin[i] = new Celula{i, -1, 0, nullptr, nullptr};
+        cabLin.Insere_Final(new Celula{i, -1, 0, nullptr, nullptr});
     for (int j = 0; j < co; j++)
-        cabCol->Insere_Final(new Celula{-1, j, 0, nullptr, nullptr});
-        //cabCol[j] = new Celula{-1, j, 0, nullptr, nullptr};
+        cabCol.Insere_Final(new Celula{-1, j, 0, nullptr, nullptr});
 }
 
 MatrizEncadeada::~MatrizEncadeada() {
-    for (int i = 0; i < cabLin->Get_Tamanho(); i++) { // pelas linhas
-        Celula* p = cabLin->Get_Item(i);
+    for (int i = 0; i < cabLin.Get_Tamanho(); i++) { // pelas linhas
+        Celula* p = cabLin.Get_Item(i);
         while (p != nullptr) {
             Celula* q = p->proxLin; 
             delete p;
             p = q;
         }
     }
-    for (int j = 0; j < cabCol->Get_Tamanho(); j++) delete cabCol->Get_Item(j);
-    //delete[] cabLin; delete[] cabCol;
-    delete cabLin; delete cabCol;
+    for (int j = 0; j < cabCol.Get_Tamanho(); j++) delete cabCol.Get_Item(j);
 }
 
 valor MatrizEncadeada::Get(int i, int j) const {
-    if (i < 0 || i >= cabLin->Get_Tamanho()
-     || j < 0 || j >= cabCol->Get_Tamanho()) throw "Indice invalido!";
+    if (i < 0 || i >= cabLin.Get_Tamanho()
+     || j < 0 || j >= cabCol.Get_Tamanho()) throw "Indice invalido!";
     Celula* ant = AntLinha(i, j);
     Celula* p = ant->proxLin;
     if (p != nullptr && p->col == j) return p->val;
     return 0;
 }
 
+void MatrizEncadeada::Get_Dimensoes(int& lin, int& col) {
+    lin = this->cabLin.Get_Tamanho(); col = this->cabCol.Get_Tamanho();
+}
+
 void MatrizEncadeada::Set(int i, int j, valor v) {
-    if (i < 0 || i >= cabLin->Get_Tamanho()
-     || j < 0 || j >= cabCol->Get_Tamanho()) throw "Indice invalido!";
+    if (i < 0 || i >= cabLin.Get_Tamanho()
+     || j < 0 || j >= cabCol.Get_Tamanho()) throw "Indice invalido!";
     Celula* antL = AntLinha(i, j);
     Celula* antC;
     Celula* p = antL->proxLin;
@@ -142,19 +174,19 @@ void MatrizEncadeada::Set(int i, int j, valor v) {
 }
 
 void MatrizEncadeada::Adicionar_Linha() {
-    cabLin->Insere_Final(new Celula{cabLin->Get_Tamanho(), -1, 0, nullptr, nullptr});
+    cabLin.Insere_Final(new Celula{cabLin.Get_Tamanho(), -1, 0, nullptr, nullptr});
 }
 
 void MatrizEncadeada::Adicionar_Coluna() {
-    cabCol->Insere_Final(new Celula{-1, cabCol->Get_Tamanho(), 0, nullptr, nullptr});
+    cabCol.Insere_Final(new Celula{-1, cabCol.Get_Tamanho(), 0, nullptr, nullptr});
 }
 
 int MatrizEncadeada::Soma_Coluna(int j) const {
-    if (j < 0 || j >= cabCol->Get_Tamanho()) throw "Indice invalido!";
+    if (j < 0 || j >= cabCol.Get_Tamanho()) throw "Indice invalido!";
 
     valor total = 0;
     // Começa do primeiro nó real da coluna j
-    Celula* p = cabCol->Get_Item(j)->proxCol; 
+    Celula* p = cabCol.Get_Item(j)->proxCol; 
     
     // Desce pela coluna somando os valores
     while (p != nullptr) { total += p->val; p = p->proxCol; }
@@ -164,12 +196,12 @@ int MatrizEncadeada::Soma_Coluna(int j) const {
 
 // ATENÇÂO: obj retornado deve fazer delete em algum momento
 valor* MatrizEncadeada::Produto(const valor* v, int dim_v) {
-    if (cabCol->Get_Tamanho() != dim_v) throw "Dimensoes incompativeis!"; 
-    valor* vetor_res = new valor[cabLin->Get_Tamanho()];
+    if (cabCol.Get_Tamanho() != dim_v) throw "Dimensoes incompativeis!"; 
+    valor* vetor_res = new valor[cabLin.Get_Tamanho()];
 
-    for (int i = 0; i < cabLin->Get_Tamanho(); i++) {
+    for (int i = 0; i < cabLin.Get_Tamanho(); i++) {
         vetor_res[i] = 0;
-        Celula* p = cabLin->Get_Item(i)->proxLin;
+        Celula* p = cabLin.Get_Item(i)->proxLin;
         while (p != nullptr) {
             vetor_res[i] += p->val * v[p->col];
             p = p->proxLin;
@@ -178,10 +210,29 @@ valor* MatrizEncadeada::Produto(const valor* v, int dim_v) {
     return vetor_res;
 }
 
+void MatrizEncadeada::Converter_Matriz(MatrizCOO& m) {
+    if (m.c != this->cabCol.Get_Tamanho() ||
+        m.l != this->cabLin.Get_Tamanho()) throw "Dimensoes invalidas!";
+
+    // Limpa Lista de tripletas antes de inserir no final da lista
+    m.tripletas.Limpa();
+
+    m.l = this->cabLin.Get_Tamanho();
+    m.c = this->cabCol.Get_Tamanho();
+    Tripleta aux;
+
+    for (int i = 0; i < cabLin.Get_Tamanho(); i++)
+        // Acesso proxLin por item da linha
+        for (Celula* p = cabLin.Get_Item(i)->proxLin; p != nullptr; p = p->proxLin) {
+            aux.lin = p->lin; aux.col = p->col; aux.val = p->val;
+            m.tripletas.Insere_Final(aux);
+        }
+}
+
 void MatrizEncadeada::Imprime() {
-    for (int i = 0; i < cabLin->Get_Tamanho(); i++) {
-        Celula* p = cabLin->Get_Item(i)->proxLin; 
-        for (int j = 0; j < cabCol->Get_Tamanho(); j++) {
+    for (int i = 0; i < cabLin.Get_Tamanho(); i++) {
+        Celula* p = cabLin.Get_Item(i)->proxLin; 
+        for (int j = 0; j < cabCol.Get_Tamanho(); j++) {
             if (p != nullptr && p->col == j) {
                 std::cout << p->val << " ";
                 p = p->proxLin;
@@ -192,14 +243,14 @@ void MatrizEncadeada::Imprime() {
 }
 
 Celula* MatrizEncadeada::AntLinha(int i, int j) const {
-    Celula* p = cabLin->Get_Item(i);
+    Celula* p = cabLin.Get_Item(i);
     while (p->proxLin != nullptr&& p->proxLin->col < j)
         p = p->proxLin;
     return p;
 }
 
 Celula* MatrizEncadeada::AntColuna(int i, int j) const {
-    Celula* p = cabCol->Get_Item(j);
+    Celula* p = cabCol.Get_Item(j);
     while (p->proxCol != nullptr && p->proxCol->lin < i)
         p = p->proxCol;
     return p;

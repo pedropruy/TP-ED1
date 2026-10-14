@@ -12,10 +12,20 @@ int main() {
     m.Imprime();
     std::cout << "=======================" << std::endl;
 
-    m.Adicionar_Linha();
-    m.Adicionar_Coluna();
-    m.Set(8, 5, 3); m.Set(8, 7, 9); m.Set(7, 7, 0);
-    m.Imprime();
+    MatrizEncadeada me(tam,tam);
+    m.Converter_Matriz(me);
+    me.Imprime();
+    std::cout << "=======================" << std::endl;
+
+    me.Adicionar_Linha();
+    me.Adicionar_Coluna();
+    me.Set(8, 5, 3); me.Set(8, 7, 9); me.Set(7, 7, 0);
+    me.Imprime();
+    std::cout << "=======================" << std::endl;
+
+    MatrizCOO mo(tam+1,tam+1);
+    me.Converter_Matriz(mo);
+    mo.Imprime();
     std::cout << "=======================" << std::endl;
     } catch (char const* e) { std::cout << e << std::endl; }
 

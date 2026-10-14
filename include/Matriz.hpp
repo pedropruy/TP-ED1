@@ -4,7 +4,11 @@
 typedef int valor;
 #include "Lista.hpp"
 
-/* A implementação das matrizes irá utilizar lin = id_item, col = id_atributo, val = modificador */
+// A implementação das matrizes irá utilizar lin = id_item, col = id_atributo, val = modificador
+
+class MatrizEncadeada; // Aqui só pro compilador não reclamar!
+
+// Tem que fazer construtores de cópia e associação com =delete para bloquear
 
 struct Tripleta { int lin, col; valor val; };
 class MatrizCOO {
@@ -12,16 +16,19 @@ class MatrizCOO {
         MatrizCOO(int linhas, int colunas);
         // ~MatrizCOO();
         valor Get(int i, int j) const;
+        void Get_Dimensoes(int& lin, int& col);
         void Set(int i, int j, valor v);
         void Adicionar_Linha(); void Adicionar_Coluna();
+        void Converter_Matriz(MatrizEncadeada& m);
         void Imprime() const;
     private:
         int l, c;    // dimensoes da matriz representada
-        Lista<Tripleta>* tripletas; // Todos as variáveis acima, Lista e Tripleta já armazenam
+        Lista<Tripleta> tripletas; // Todos as variáveis acima, Lista e Tripleta já armazenam
         // Retorna pos (não indice) e "achou" serve para indicar se encontrou ou não
         int Busca_Binaria(int i, int j, bool& achou) const;
         void Insere_Elemento(int pos, int i, int j, valor v);  
         void Remove_Elemento(int pos);
+        friend class MatrizEncadeada;
 };
 
 struct Celula {
@@ -35,19 +42,22 @@ class MatrizEncadeada {
     public:
         MatrizEncadeada(int linhas, int colunas); ~MatrizEncadeada();
         valor Get(int i, int j) const;
+        void Get_Dimensoes(int& lin, int& col);
         void Set(int i, int j, valor v);
         void Adicionar_Linha(); void Adicionar_Coluna();
         valor Soma_Coluna(int j) const;  // percorre so a lista da coluna j
         valor* Produto(const valor* v, int dim_v);
+        void Converter_Matriz(MatrizCOO& m);
         void Imprime();
     private:
         // Reorganizar a implementação para usar Lista
         // contadores l e c foram removidos pois Lista já armazena esses valores
         int tamanho;
-        Lista<Celula*>* cabLin;  // cabLin.Get_Item(i): celula cabeca da linha i
-        Lista<Celula*>* cabCol;  // cabCol.Get_Item(j): celula cabeca da coluna j
+        Lista<Celula*> cabLin;  // cabLin.Get_Item(i): celula cabeca da linha i
+        Lista<Celula*> cabCol;  // cabCol.Get_Item(j): celula cabeca da coluna j
         Celula* AntLinha(int i, int j) const;
         Celula* AntColuna(int i, int j) const;
+        friend class MatrizCOO;
 };
 
 #endif

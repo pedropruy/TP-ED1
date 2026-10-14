@@ -5,8 +5,8 @@ template<typename TipoItem>
 class Lista {
     public:
         Lista(); ~Lista();
-        int Get_Tamanho();
-        TipoItem& Get_Item(int ind);
+        int Get_Tamanho(); int Get_Tamanho() const;
+        TipoItem& Get_Item(int ind); TipoItem& Get_Item(int ind) const;
         void Set_Item(const TipoItem& item, int ind);
         void Insere_Inicio(const TipoItem& item);
         void Insere_Final(const TipoItem& item);
