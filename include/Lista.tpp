@@ -15,15 +15,15 @@ int Lista<TipoItem>::Get_Tamanho() { return tamanho; }
 
 
 template<typename TipoItem>
-TipoItem& Lista<TipoItem>::Get_Item(int id) {
-    if ((id > tamanho-1) ||(id < 0)) throw "ERRO: Posicao Invalida!";
-    return itens[id];
+TipoItem& Lista<TipoItem>::Get_Item(int ind) {
+    if ((ind > tamanho-1) ||(ind < 0)) throw "Get_Item: Id Invalido!";
+    return itens[ind];
 }
 
 template<typename TipoItem>
-void Lista<TipoItem>::Set_Item(const TipoItem& item, int pos) {
-    if ((pos > tamanho) ||(pos <= 0)) throw "ERRO: Posicao Invalida!";
-    itens[pos-1] = item;
+void Lista<TipoItem>::Set_Item(const TipoItem& item, int ind) {
+    if ((ind >= tamanho) ||(ind < 0)) throw "Set_Item: Id Invalido!";
+    itens[ind] = item;
 }
 
 template<typename TipoItem>
@@ -44,7 +44,7 @@ void Lista<TipoItem>::Insere_Final(const TipoItem& item) {
 
 template<typename TipoItem>
 void Lista<TipoItem>::Insere_Posicao(const TipoItem& item, int pos) {
-    if ((pos > tamanho+1) || (pos <= 0)) throw "ERRO: Posicao Invalida!";
+    if ((pos > tamanho+1) || (pos <= 0)) throw "Insere_Posicao: Posicao Invalida!";
     if (tamanho == capacidade) Dobrar_Tamanho();
     pos--; // posição no vetor = pos-1
     int i;
@@ -74,7 +74,7 @@ TipoItem Lista<TipoItem>::Remove_Final() {
 
 template<typename TipoItem>
 TipoItem Lista<TipoItem>::Remove_Posicao(int pos) {
-    if ((pos > tamanho) ||(pos <= 0)) throw "ERRO: Posicao Invalida!";
+    if ((pos > tamanho) ||(pos <= 0)) throw "Remove_Posicao: Posicao Invalida!";
     pos--; // posição no vetor = pos-1
     int i; TipoItem aux;
     aux = itens [pos];

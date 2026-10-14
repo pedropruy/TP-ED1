@@ -6,8 +6,8 @@ class Lista {
     public:
         Lista(); ~Lista();
         int Get_Tamanho();
-        TipoItem& Get_Item(int id);
-        void Set_Item(const TipoItem& item, int pos);
+        TipoItem& Get_Item(int ind);
+        void Set_Item(const TipoItem& item, int ind);
         void Insere_Inicio(const TipoItem& item);
         void Insere_Final(const TipoItem& item);
         void Insere_Posicao(const TipoItem& item, int pos);

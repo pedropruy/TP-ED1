@@ -1,6 +1,85 @@
 #include "Matriz.hpp"
 #include <iostream>
 
+MatrizCOO::MatrizCOO(int linhas_, int colunas_) {
+    l = linhas_; c = colunas_; /*tamanho = 0; tamanhoMAX = 4;
+    linhas = new int [tamanhoMAX];
+    colunas = new int [tamanhoMAX];
+    valores = new valor[tamanhoMAX];*/
+    tripletas = new Lista<Tripleta>();
+}
+
+valor MatrizCOO::Get(int i, int j) const {
+    if (i < 0 || i >= l || j < 0 || j >= c) throw "Posicao invalida!";
+    bool achou = false;
+    int pos = Busca_Binaria(i, j, achou);
+    
+    if (achou) return tripletas->Get_Item(pos-1).val;
+    return 0; // nao esta na lista: e zero
+}
+
+void MatrizCOO::Set(int i, int j, valor v) {
+    if (i < 0 || i >= l || j < 0 || j >= c) throw "Posicao invalida!";
+    bool achou = false;
+    int pos = Busca_Binaria(i, j, achou);
+    
+    if (achou) {
+        if (v == 0) Remove_Elemento(pos);
+        // pos-1, pois Get_Item é por id não posição
+        else tripletas->Get_Item(pos-1).val = v;
+        return;
+    }
+    if (v != 0) Insere_Elemento(pos, i, j, v);
+}
+
+void MatrizCOO::Adicionar_Linha() { l++; }
+void MatrizCOO::Adicionar_Coluna() { c++; }
+
+void MatrizCOO::Imprime() const {
+    int id = 0; // proxima tripla a imprimir
+    for (int i = 0; i < l; i++) {
+        for (int j = 0; j < c; j++) {
+            if (id < tripletas->Get_Tamanho() && tripletas->Get_Item(id).lin == i
+                 && tripletas->Get_Item(id).col == j) {
+                std::cout << tripletas->Get_Item(id).val << " ";
+                id++;
+            } else std::cout << "0 ";
+        }
+        std::cout << "\n";
+    }
+}
+
+int MatrizCOO::Busca_Binaria(int i, int j, bool& achou) const {
+    int meio; int esq = 1; int dir = tripletas->Get_Tamanho();
+    
+    while (esq <= dir) {
+        meio = esq + (dir - esq) / 2;
+        Tripleta t = tripletas->Get_Item(meio-1);
+        
+        // Item está exatamente na posição meio
+        if (t.lin == i && t.col == j) { achou = true; return meio; }
+        
+        // 1º procurar pela linha. Se busco item maior procuro na direita. 
+        // 2º achei item, mas não atributo. Se busco atributo maior procuro a direita.
+        // Se não, procuro a esquerda
+        if (t.lin < i || (t.lin == i && t.col < j)) esq = meio + 1;
+        else dir = meio - 1;
+    }
+    
+    achou = false;
+    // O valor da esquerda é exatamente onde novo item deve ser inserido
+    return esq; 
+}
+
+void MatrizCOO::Insere_Elemento(int pos, int i, int j, valor v) {
+    Tripleta nova_tripla;
+    nova_tripla.lin = i; nova_tripla.col = j; nova_tripla.val = v;
+    
+    tripletas->Insere_Posicao(nova_tripla, pos); 
+}
+
+void MatrizCOO::Remove_Elemento(int pos) { tripletas->Remove_Posicao(pos); }
+
 MatrizEncadeada::MatrizEncadeada(int li, int co) {
     if (li < 0 || co < 0) throw "Tamanho invalido!";
     // l = li; c = co;

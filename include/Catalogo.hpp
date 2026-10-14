@@ -27,6 +27,8 @@ class Catalogo {
         Lista<Atributo> atributos;
         Lista<Aventureiro> aventureiros;
         Fila<int> encomendas;
+        MatrizCOO* matriz_L;
+        MatrizEncadeada* matriz_T;
         void Poder();
         void Equilibrio();
         void Sinergia();
