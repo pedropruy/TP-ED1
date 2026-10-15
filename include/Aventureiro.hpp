@@ -19,7 +19,7 @@ class Aventureiro {
         void Set_Id(unsigned int _id);
         void Set_Nome(const std::string& _nome);
         void Equipar_Item(unsigned int _id);
-        unsigned int Desequipar_Item(unsigned int _id);
+        unsigned int Desequipar_Item();
         
         friend std::ostream& operator<<(std::ostream& os, const Aventureiro& a);
 };

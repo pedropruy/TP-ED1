@@ -1,6 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I./include 
-#-fsanitize=address -g -fno-omit-frame-pointer
+CXXFLAGS = -std=c++11 -Wall -I./include -fsanitize=address -g -fno-omit-frame-pointer
 
 SRC_DIR = ./src
 INCLUDE_DIR = ./include
@@ -13,7 +12,9 @@ OBJ = $(OBJ_DIR)/main.o \
 	  $(OBJ_DIR)/Item.o \
 	  $(OBJ_DIR)/Atributo.o \
 	  $(OBJ_DIR)/Aventureiro.o \
-	  $(OBJ_DIR)/Matriz.o
+	  $(OBJ_DIR)/Matriz.o \
+	  $(OBJ_DIR)/Catalogo.o \
+	  $(OBJ_DIR)/Forja.o
 
 all: $(TARGET)
 
@@ -34,6 +35,14 @@ $(OBJ_DIR)/Aventureiro.o: $(SRC_DIR)/Aventureiro.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/Matriz.o: $(SRC_DIR)/Matriz.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/Catalogo.o: $(SRC_DIR)/Catalogo.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/Forja.o: $(SRC_DIR)/Forja.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

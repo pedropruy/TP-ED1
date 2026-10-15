@@ -6,21 +6,38 @@ typedef int valor;
 
 // A implementação das matrizes irá utilizar lin = id_item, col = id_atributo, val = modificador
 
-class MatrizEncadeada; // Aqui só pro compilador não reclamar!
-
 // Tem que fazer construtores de cópia e associação com =delete para bloquear
 
+struct Consulta {int id_objeto; int valor; };
+class Matriz {
+    public:
+        Matriz(); virtual ~Matriz();
+        virtual valor Get(int i, int j) const = 0;
+        virtual void Get_Dimensoes(int& lin, int& col) = 0;
+        virtual void Set(int i, int j, valor v) = 0;
+        virtual void Adicionar_Linha() = 0;
+        virtual void Adicionar_Coluna() = 0;
+        virtual void Percorrer_Linha(int i, Lista<Consulta>& resultados) = 0;
+        virtual void Percorrer_Coluna(int j, Lista<Consulta>& resultados) = 0;
+        virtual void Converter_Matriz(Matriz& m) = 0;
+        virtual void Imprime() const = 0;
+};
+
 struct Tripleta { int lin, col; valor val; };
-class MatrizCOO {
+
+class MatrizEncadeada; // Aqui só pro compilador não reclamar!
+class MatrizCOO : public Matriz {
     public:
         MatrizCOO(int linhas, int colunas);
         // ~MatrizCOO();
-        valor Get(int i, int j) const;
-        void Get_Dimensoes(int& lin, int& col);
-        void Set(int i, int j, valor v);
-        void Adicionar_Linha(); void Adicionar_Coluna();
-        void Converter_Matriz(MatrizEncadeada& m);
-        void Imprime() const;
+        valor Get(int i, int j) const override;
+        void Get_Dimensoes(int& lin, int& col) override;
+        void Set(int i, int j, valor v) override;
+        void Adicionar_Linha() override; void Adicionar_Coluna() override;
+        void Percorrer_Linha(int i, Lista<Consulta>& resultados) override;
+        void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
+        void Converter_Matriz(Matriz& m) override;
+        void Imprime() const override;
     private:
         int l, c;    // dimensoes da matriz representada
         Lista<Tripleta> tripletas; // Todos as variáveis acima, Lista e Tripleta já armazenam
@@ -38,17 +55,19 @@ struct Celula {
     Celula* proxCol;  // proxima celula na mesma coluna (linha maior)
 };
 
-class MatrizEncadeada {
+class MatrizEncadeada : public Matriz {
     public:
         MatrizEncadeada(int linhas, int colunas); ~MatrizEncadeada();
-        valor Get(int i, int j) const;
-        void Get_Dimensoes(int& lin, int& col);
-        void Set(int i, int j, valor v);
-        void Adicionar_Linha(); void Adicionar_Coluna();
+        valor Get(int i, int j) const override;
+        void Get_Dimensoes(int& lin, int& col) override;
+        void Set(int i, int j, valor v) override;
+        void Adicionar_Linha() override; void Adicionar_Coluna() override;
+        void Percorrer_Linha(int i, Lista<Consulta>& resultados) override;
+        void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
         valor Soma_Coluna(int j) const;  // percorre so a lista da coluna j
         valor* Produto(const valor* v, int dim_v);
-        void Converter_Matriz(MatrizCOO& m);
-        void Imprime();
+        void Converter_Matriz(Matriz& m) override;
+        void Imprime() const override;
     private:
         // Reorganizar a implementação para usar Lista
         // contadores l e c foram removidos pois Lista já armazena esses valores

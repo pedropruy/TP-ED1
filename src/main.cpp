@@ -1,32 +1,49 @@
-#include "Matriz.hpp"
+#include "Forja.hpp"
 #include <iostream>
 
 int main() {
-    int tam = 8;
-
     try {
-    MatrizCOO m(tam, tam);
-    m.Set(0, 0, 3); m.Set(0, 1, 2); m.Set(1, 6, 5);
-    m.Set(7, 0, 1); m.Set(3, 3, 3); m.Set(2, 7, 9);
-    m.Set(7, 5, 0); m.Set(5, 7, 9); m.Set(7, 7, 8);
-    m.Imprime();
-    std::cout << "=======================" << std::endl;
+        Forja f;
+        std::cout << f.Modo('L') << std::endl;
+        f.Cadastro_Atributo("Forca");
+        f.Cadastro_Atributo("Carisma");
+        f.Cadastro_Atributo("Furtividade");
+        f.Cadastro_Item("MachadoGenerico");
+        f.Cadastro_Item("BarbaPosticaDePrestigio");
+        f.Cadastro_Item("BotasSilenciosas");
+        f.Cadastro_Item("ElmoDoPrimo");
+        f.Definir_Modificador(0,0,5);
+        f.Definir_Modificador(1,1,7);
+        f.Definir_Modificador(1,2,-3);
+        f.Definir_Modificador(2,2,4);
+        f.Definir_Modificador(3,0,2);
+        f.Definir_Modificador(3,1,2);
+        f.Imprime();
+        std::cout << "================" << std::endl;
+        f.Cadastro_Aventureiro("Blibblon");
+        f.Cadastro_Aventureiro("Grunilda");
+        Lista<Consulta> lista;
+        f.Consulta_Item(1,lista);
+        for (int i = 0; i < lista.Get_Tamanho(); i++) {
+            std::cout << lista.Get_Item(i).id_objeto << ":" << lista.Get_Item(i).valor << std::endl;
+        }
+        std::cout << "================" << std::endl;
+        lista.Limpa();
+        f.Consulta_Atributo(2,lista);
+        for (int i = 0; i < lista.Get_Tamanho(); i++) {
+            std::cout << lista.Get_Item(i).id_objeto << ":" << lista.Get_Item(i).valor << std::endl;
+        }
+        std::cout << "================" << std::endl;
+        f.Adiciona_Encomenda(0,0);
+        f.Adiciona_Encomenda(1,1);
+        f.Adiciona_Encomenda(0,3);
+        Lista<Pedido> pedidos;
+        f.Turnos_de_Trabalho(2,pedidos);
+        for (int i = 0; i < pedidos.Get_Tamanho(); i++) {
+            std::cout << pedidos.Get_Item(i).id_aventureiro << ":" << pedidos.Get_Item(i).id_item << std::endl;
+        }
 
-    MatrizEncadeada me(tam,tam);
-    m.Converter_Matriz(me);
-    me.Imprime();
-    std::cout << "=======================" << std::endl;
-
-    me.Adicionar_Linha();
-    me.Adicionar_Coluna();
-    me.Set(8, 5, 3); me.Set(8, 7, 9); me.Set(7, 7, 0);
-    me.Imprime();
-    std::cout << "=======================" << std::endl;
-
-    MatrizCOO mo(tam+1,tam+1);
-    me.Converter_Matriz(mo);
-    mo.Imprime();
-    std::cout << "=======================" << std::endl;
+    
     } catch (char const* e) { std::cout << e << std::endl; }
 
     return 0;

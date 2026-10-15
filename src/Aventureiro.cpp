@@ -12,7 +12,7 @@ void Aventureiro::Set_Id(unsigned int _id) { id = _id; }
 void Aventureiro::Set_Nome(const std::string& _nome) { nome = _nome; }
 
 void Aventureiro::Equipar_Item(unsigned int _id) { build.Empilha(_id); }
-unsigned int Aventureiro::Desequipar_Item(unsigned int _id) { return build.Desempilha(); }
+unsigned int Aventureiro::Desequipar_Item() { return build.Desempilha(); }
 
 std::ostream& operator<<(std::ostream& os, const Aventureiro& a) {
     os << a.id << ":" << a.nome;

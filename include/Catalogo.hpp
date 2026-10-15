@@ -1,37 +1,22 @@
 #ifndef CATALOGO_HPP
 #define CATALOGO_HPP
 
-#include "Lista.hpp"
-#include "Fila.hpp"
 #include "Matriz.hpp"
-#include "Item.hpp"
-#include "Atributo.hpp"
-#include "Aventureiro.hpp"
 
 class Catalogo {
     public:
-        void Modo(char modo); // E
-        void Cadastro_Atributo(std::string nome); // A
-        void Cadastro_Item(std::string nome); // I
-        void Definir_Modificador(int id_i, int id_a, int valor); // M
-        void Cadastro_Aventureiro(std::string nome); // H
-        void Encomenda(int id_a, int id_i); // F
-        void Turnos_de_Trabalho(int turnos); // Z
-        void Desequipar(int id_a); // D
-        void Consulta_Item(int id_i); // LI
-        void Consulta_Atributo(int id_a); // LA
-        void Consulta_Build(int id_a); // LH
-        void Consulta_Recomendacao(); // Q
+        Catalogo(); ~Catalogo();
+        char Trocar_de_Modo(char modo);
+        int Get_Celula(int id_i, int id_a) const;
+        void Set_Celula(int id_i, int id_a, int valor);
+        void Novo_Item(); void Novo_Atributo(); // Cresce l e c da matriz 
+        void Remocao_Celula(int id_i, int id_a); // mas coisa que Set(valor = 0)
+        void Percurso_Linha(int id_i, Lista<Consulta>& resultados) const;
+        void Percurso_Coluna(int id_a, Lista<Consulta>& resultados) const;
+        double Produto_Interno(int id_i, const double* vetor_build) const;
+        void Imprime() const;
     private:
-        Lista<Item> itens;
-        Lista<Atributo> atributos;
-        Lista<Aventureiro> aventureiros;
-        Fila<int> encomendas;
-        MatrizCOO* matriz_L;
-        MatrizEncadeada* matriz_T;
-        void Poder();
-        void Equilibrio();
-        void Sinergia();
+        Matriz* matriz;
 };
 
 #endif

@@ -1,6 +1,9 @@
 #include "Matriz.hpp"
 #include <iostream>
 
+Matriz::Matriz() {};
+Matriz::~Matriz() {};
+
 MatrizCOO::MatrizCOO(int linhas_, int colunas_) : l(linhas_), c(colunas_) {}
 
 valor MatrizCOO::Get(int i, int j) const {
@@ -33,16 +36,55 @@ void MatrizCOO::Set(int i, int j, valor v) {
 void MatrizCOO::Adicionar_Linha() { l++; }
 void MatrizCOO::Adicionar_Coluna() { c++; }
 
+void MatrizCOO::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
+    bool achou = false;
+    // Buscar por (i,0) sempre irá devolver um item ou a última posição perto desse item
+    int pos = Busca_Binaria(i, 0, achou); 
+    
+    Consulta c; Tripleta t;
+    
+    for (int k = pos-1; k < tripletas.Get_Tamanho(); k++) {
+        t = tripletas.Get_Item(k);
+        
+        // Como o vetor é ordenado, se a primeira posição é maior então linha é vazia
+        if (t.lin > i) break; 
+        
+        if (t.lin == i) {
+            c.id_objeto = t.col; c.valor = t.val;
+            resultados.Insere_Final(c);
+        }
+    }
+}
+
+void MatrizCOO::Percorrer_Coluna(int j, Lista<Consulta>& resultados) {
+    Consulta c; Tripleta t;
+    
+    // Não há atalho: Varrer a lista de tripletas de ponta a ponta
+    for (int k = 0; k < tripletas.Get_Tamanho(); k++) {
+        t = tripletas.Get_Item(k);
+        
+        // Só filtra os itens que batem com a coluna 'j'
+        if (t.col == j) {
+            c.id_objeto = t.lin;
+            c.valor = t.val;
+            resultados.Insere_Final(c);
+        }
+    }
+}
+
 // Deve exigir que a matriz m seja recém-construida
-void MatrizCOO::Converter_Matriz(MatrizEncadeada& m) {
+void MatrizCOO::Converter_Matriz(Matriz& m) {
+    MatrizEncadeada* me = dynamic_cast<MatrizEncadeada*>(&m);
+    if (me == nullptr) throw "Classe Matriz invalida!";
+    
     // Tenho que exigir que matriz m é compatível com a matriz atual
-    if (m.cabCol.Get_Tamanho() != this->c ||
-        m.cabLin.Get_Tamanho() != this->l) throw "Dimensoes invalidas!";
+    if (me->cabCol.Get_Tamanho() != this->c ||
+        me->cabLin.Get_Tamanho() != this->l) throw "Dimensoes invalidas!";
 
     // Ponteiro ultCol será utilizado para associar durante o loop principal
     Celula** ultCol = new Celula*[this->c];
     for (int j = 0; j < this->c; j++)
-        ultCol[j] = m.cabCol.Get_Item(j);
+        ultCol[j] = me->cabCol.Get_Item(j);
     
     Celula* ultLin = nullptr;
     int linAtual = -1;
@@ -58,7 +100,7 @@ void MatrizCOO::Converter_Matriz(MatrizEncadeada& m) {
         if (tri.lin != linAtual) {
             linAtual = tri.lin;
             // Pegando a célula cabeça da linha
-            ultLin = m.cabLin.Get_Item(linAtual);
+            ultLin = me->cabLin.Get_Item(linAtual);
         }
         
         ultLin->proxLin = nova; // Última linha liga a nova linha
@@ -68,7 +110,7 @@ void MatrizCOO::Converter_Matriz(MatrizEncadeada& m) {
         ultCol[tri.col]->proxCol = nova; // Última coluna liga a nova coluna
         ultCol[tri.col] = nova; // Atualiza quem é a última coluna
     }
-    m.tamanho = tripletas.Get_Tamanho();
+    me->tamanho = tripletas.Get_Tamanho();
     delete[] ultCol;
 }
 
@@ -210,26 +252,49 @@ valor* MatrizEncadeada::Produto(const valor* v, int dim_v) {
     return vetor_res;
 }
 
-void MatrizEncadeada::Converter_Matriz(MatrizCOO& m) {
-    if (m.c != this->cabCol.Get_Tamanho() ||
-        m.l != this->cabLin.Get_Tamanho()) throw "Dimensoes invalidas!";
+void MatrizEncadeada::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
+    Celula* p = cabLin.Get_Item(i)->proxLin;
+    Consulta c;
+    while (p != nullptr) {
+        c.id_objeto = p->col; c.valor = p->val;
+        resultados.Insere_Final(c);
+        p = p->proxLin;
+    }
+}
+
+void MatrizEncadeada::Percorrer_Coluna(int j, Lista<Consulta>& resultados) {
+    Celula* p = cabCol.Get_Item(j)->proxCol;
+    Consulta c;
+    while (p != nullptr) {
+        c.id_objeto = p->lin; c.valor = p->val;
+        resultados.Insere_Final(c);
+        p = p->proxCol;
+    }
+}
+
+void MatrizEncadeada::Converter_Matriz(Matriz& m) {
+    MatrizCOO* mo = dynamic_cast<MatrizCOO*>(&m);
+    if (mo == nullptr) throw "Classe Matriz invalida!";
+
+    if (mo->c != this->cabCol.Get_Tamanho() ||
+        mo->l != this->cabLin.Get_Tamanho()) throw "Dimensoes invalidas!";
 
     // Limpa Lista de tripletas antes de inserir no final da lista
-    m.tripletas.Limpa();
+    mo->tripletas.Limpa();
 
-    m.l = this->cabLin.Get_Tamanho();
-    m.c = this->cabCol.Get_Tamanho();
+    mo->l = this->cabLin.Get_Tamanho();
+    mo->c = this->cabCol.Get_Tamanho();
     Tripleta aux;
 
     for (int i = 0; i < cabLin.Get_Tamanho(); i++)
         // Acesso proxLin por item da linha
         for (Celula* p = cabLin.Get_Item(i)->proxLin; p != nullptr; p = p->proxLin) {
             aux.lin = p->lin; aux.col = p->col; aux.val = p->val;
-            m.tripletas.Insere_Final(aux);
+            mo->tripletas.Insere_Final(aux);
         }
 }
 
-void MatrizEncadeada::Imprime() {
+void MatrizEncadeada::Imprime() const {
     for (int i = 0; i < cabLin.Get_Tamanho(); i++) {
         Celula* p = cabLin.Get_Item(i)->proxLin; 
         for (int j = 0; j < cabCol.Get_Tamanho(); j++) {
