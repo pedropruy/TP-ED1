@@ -179,19 +179,20 @@ void Terminal_Consulta_Recomendacao(Forja& j, std::stringstream& ss) {
 
     Lista<Metrica> metricas;
     std::string nome_metrica;
+    bool sinergia = false;
     for (int i = 0; i < qtd_met; i++) {
         Metrica m;
         ss >> nome_metrica; ss >> m.peso;
         if (nome_metrica == "PODER") m.enum_metrica = 0;
         else if (nome_metrica == "EQUILIBRIO") m.enum_metrica = 1;
-        else if (nome_metrica == "SINERGIA") m.enum_metrica = 2;
+        else if (nome_metrica == "SINERGIA") { m.enum_metrica = 2; sinergia = true; }
         else throw "Metrica invalida";
         metricas.Insere_Final(m);
     }
 
     // enum_metrica = id_item   peso = pontucao
     Lista<Ranking> itens;
-    j.Consulta_Recomendacao(id_v, qtd_max, metricas, itens);
+    j.Consulta_Recomendacao(id_v, qtd_max, metricas, itens, sinergia);
 
     if (itens.Get_Tamanho() == 0) return;
 

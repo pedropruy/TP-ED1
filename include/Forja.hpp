@@ -7,13 +7,13 @@
 #include "Atributo.hpp"
 #include "Aventureiro.hpp"
 #include "Catalogo.hpp"
+#include "Ordenacao.hpp"
 
 enum EstrategiaBuild { IMEDIATA, SOB_DEMANDA };
 enum M { PODER, EQUILIBRIO, SINERGIA };
 
 struct Pedido { int id_aventureiro; int id_item; };
 struct Metrica { int enum_metrica; double peso; };
-struct Ranking { int id_item; double pontuacao; };
 
 class Forja {
     public:
@@ -34,8 +34,7 @@ class Forja {
         void Consulta_Atributo_Intervalo(int id_a, int min, int max, Lista<Consulta>& lista) const; // LF
         void Consulta_Build(int id_v, Lista<Consulta>& lista); // LH
         void Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
-                                   Lista<Ranking>& recomendacao); // Q
-        void Insercao(Lista<Ranking>& lista);
+                                   Lista<Ranking>& recomendacao, bool sinergia = false); // Q
         void Imprime() const;
     private:
         Lista<Item> itens;
@@ -46,7 +45,7 @@ class Forja {
 
         double Poder(int id_i);
         double Equilibrio(int id_i);
-        double Sinergia(int id_v, int id_i, Lista<Consulta> build, double norma_build);
+        double Sinergia(int id_v, int id_i, Lista<Consulta>& build, double norma_build);
         EstrategiaBuild estrategia_atual;
         bool atualizar_build = true;
         Lista<double*> build;  // Em qual época o cache[id] foi gerado

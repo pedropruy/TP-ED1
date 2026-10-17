@@ -62,7 +62,7 @@ void Lista<TipoItem>::Insere_Posicao(const TipoItem& item, int pos) {
 }
 
 template<typename TipoItem>
-TipoItem& Lista<TipoItem>::Remove_Inicio() {
+TipoItem Lista<TipoItem>::Remove_Inicio() {
     if (tamanho == 0) throw "ERRO: Lista vazia!";
     int i; TipoItem aux;
     aux = itens[0];
@@ -72,7 +72,7 @@ TipoItem& Lista<TipoItem>::Remove_Inicio() {
 }
 
 template<typename TipoItem>
-TipoItem& Lista<TipoItem>::Remove_Final() {
+TipoItem Lista<TipoItem>::Remove_Final() {
     if (tamanho == 0) throw "ERRO: Lista vazia!";
     TipoItem aux;
     tamanho--;
@@ -81,7 +81,7 @@ TipoItem& Lista<TipoItem>::Remove_Final() {
 }
 
 template<typename TipoItem>
-TipoItem& Lista<TipoItem>::Remove_Posicao(int pos) {
+TipoItem Lista<TipoItem>::Remove_Posicao(int pos) {
     if ((pos > tamanho) ||(pos <= 0)) throw "Remove_Posicao: Posicao Invalida!";
     pos--; // posição no vetor = pos-1
     int i; TipoItem aux;

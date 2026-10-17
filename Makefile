@@ -15,7 +15,8 @@ OBJ = $(OBJ_DIR)/main.o \
 	  $(OBJ_DIR)/Matriz.o \
 	  $(OBJ_DIR)/Catalogo.o \
 	  $(OBJ_DIR)/Forja.o \
-	  $(OBJ_DIR)/Entrada.o
+	  $(OBJ_DIR)/Entrada.o \
+	  $(OBJ_DIR)/Ordenacao.o
 
 all: $(TARGET)
 
@@ -48,6 +49,10 @@ $(OBJ_DIR)/Forja.o: $(SRC_DIR)/Forja.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/Entrada.o: $(SRC_DIR)/Entrada.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/Ordenacao.o: $(SRC_DIR)/Ordenacao.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
