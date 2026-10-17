@@ -17,6 +17,7 @@ class Matriz {
         virtual void Set(int i, int j, valor v) = 0;
         virtual void Adicionar_Linha() = 0;
         virtual void Adicionar_Coluna() = 0;
+        virtual void Somar_Linha(int id_i, int* vetor, int sinal = 1) = 0;
         virtual void Percorrer_Linha(int i, Lista<Consulta>& resultados) = 0;
         virtual void Percorrer_Coluna(int j, Lista<Consulta>& resultados) = 0;
         virtual void Converter_Matriz(Matriz& m) = 0;
@@ -34,6 +35,7 @@ class MatrizCOO : public Matriz {
         void Get_Dimensoes(int& lin, int& col) override;
         void Set(int i, int j, valor v) override;
         void Adicionar_Linha() override; void Adicionar_Coluna() override;
+        void Somar_Linha(int id_i, int* vetor, int sinal) override;
         void Percorrer_Linha(int i, Lista<Consulta>& resultados) override;
         void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
         void Converter_Matriz(Matriz& m) override;
@@ -62,6 +64,7 @@ class MatrizEncadeada : public Matriz {
         void Get_Dimensoes(int& lin, int& col) override;
         void Set(int i, int j, valor v) override;
         void Adicionar_Linha() override; void Adicionar_Coluna() override;
+        void Somar_Linha(int id_i, int* vetor, int sinal) override;
         void Percorrer_Linha(int i, Lista<Consulta>& resultados) override;
         void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
         valor Soma_Coluna(int j) const;  // percorre so a lista da coluna j

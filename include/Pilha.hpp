@@ -2,6 +2,7 @@
 #define PILHA_HPP
 
 #include "TipoCelula.hpp"
+#include "Lista.hpp"
 
 template<typename TipoItem>
 class Pilha {
@@ -12,6 +13,7 @@ class Pilha {
         int Get_Tamanho() const;
         void Empilha(const TipoItem& item);
         TipoItem Desempilha();
+        void Percorrer_Pilha(Lista<TipoItem>& lista) const;
         void Imprime();
         void Limpa();
     private:
@@ -33,6 +35,7 @@ class PilhaEncadeada {
         int Get_Tamanho() const;
         void Empilha(const TipoItem& item);
         TipoItem Desempilha();
+        void Percorrer_Pilha(Lista<TipoItem>& lista) const;
         void Imprime();
         void Limpa();
     private:

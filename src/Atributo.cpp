@@ -12,11 +12,11 @@ Atributo& Atributo::operator= (const Atributo &a) {
 }
 Atributo::~Atributo() {}
 
-unsigned int Atributo::Get_Id() { return id; }
-std::string Atributo::Get_Nome() { return nome; }
+unsigned int Atributo::Get_Id() const { return id; }
+const std::string& Atributo::Get_Nome() const { return nome; }
 
 void Atributo::Set_Id(unsigned int _id) { id = _id; }
-void Atributo::Set_Nome(std::string _nome) { nome = _nome; }
+void Atributo::Set_Nome(const std::string& _nome) { nome = _nome; }
 
 std::ostream& operator<<(std::ostream& os, const Atributo& a) {
     os << a.id << ":" << a.nome;

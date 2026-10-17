@@ -8,7 +8,12 @@
 #include "Aventureiro.hpp"
 #include "Catalogo.hpp"
 
+enum EstrategiaBuild { IMEDIATA, SOB_DEMANDA };
+enum M { PODER, EQUILIBRIO, SINERGIA };
+
 struct Pedido { int id_aventureiro; int id_item; };
+struct Metrica { int enum_metrica; double peso; };
+struct Ranking { int id_item; double pontuacao; };
 
 class Forja {
     public:
@@ -27,9 +32,10 @@ class Forja {
         void Consulta_Item(int id_i, Lista<Consulta>& lista) const; // LI
         void Consulta_Atributo(int id_a, Lista<Consulta>& lista) const; // LA
         void Consulta_Atributo_Intervalo(int id_a, int min, int max, Lista<Consulta>& lista) const; // LF
-        Lista<Consulta> Consulta_Build(int id_v) const; // LH
-        Lista<Consulta> Consulta_Recomendacao(int id_a, int n, Lista<std::string>& metricas,
-                                   Lista<double>& pesos); // Q
+        void Consulta_Build(int id_v, Lista<Consulta>& lista); // LH
+        void Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
+                                   Lista<Ranking>& recomendacao); // Q
+        void Insercao(Lista<Ranking>& lista);
         void Imprime() const;
     private:
         Lista<Item> itens;
@@ -37,9 +43,14 @@ class Forja {
         Lista<Aventureiro> aventureiros;
         Fila<Pedido> encomendas;
         Catalogo catalogo;
+
         double Poder(int id_i);
         double Equilibrio(int id_i);
-        double Sinergia(int id_i, int id_v);
+        double Sinergia(int id_v, int id_i, Lista<Consulta> build, double norma_build);
+        EstrategiaBuild estrategia_atual;
+        bool atualizar_build = true;
+        Lista<double*> build;  // Em qual época o cache[id] foi gerado
+        void Obter_Build(int id_v, Lista<Consulta>& build);  // Função que LH e Q chamam
 };
 
 #endif

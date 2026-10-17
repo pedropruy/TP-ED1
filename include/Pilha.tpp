@@ -63,6 +63,14 @@ TipoItem Pilha<TipoItem>::Desempilha(){
     return aux;
 }
 
+template<typename TipoItem>
+void Pilha<TipoItem>::Percorrer_Pilha(Lista<TipoItem>& lista) const {
+    if (tamanho == 0) return;
+    
+    lista.Limpa();
+    for (int i = 0; i < tamanho; i++)
+        lista.Insere_Final(itens[i]);
+}
 
 template<typename TipoItem>
 void Pilha<TipoItem>::Imprime() {
@@ -160,6 +168,18 @@ TipoItem PilhaEncadeada<TipoItem>::Desempilha() {
     delete p;
     tamanho--;
     return aux;
+}
+
+template<typename TipoItem>
+void PilhaEncadeada<TipoItem>::Percorrer_Pilha(Lista<TipoItem>& lista) const {
+    if (tamanho == 0) return;
+
+    lista.Limpa();
+    TipoCelula<TipoItem>* aux = this->topo;
+    while (aux != nullptr) {
+        lista.Insere_Final(aux->item);
+        aux = aux->prox;
+    }
 }
 
 template<typename TipoItem>

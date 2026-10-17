@@ -12,10 +12,10 @@ class Atributo {
         Atributo(const Atributo &a);
         Atributo& operator= (const Atributo &a);
         ~Atributo();
-        unsigned int Get_Id();
-        std::string Get_Nome();
+        unsigned int Get_Id() const;
+        const std::string& Get_Nome() const;
         void Set_Id(unsigned int _id);
-        void Set_Nome(std::string _nome);
+        void Set_Nome(const std::string& _nome);
         
         friend std::ostream& operator<<(std::ostream& os, const Atributo& a);
 };

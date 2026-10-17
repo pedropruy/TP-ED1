@@ -5,8 +5,10 @@ Aventureiro::Aventureiro(unsigned int _id, const std::string& _nome) : id(_id), 
 Aventureiro::Aventureiro() : id(-1), nome("ERRO") {}
 
 unsigned int Aventureiro::Get_Id() const { return id; }
-std::string Aventureiro::Get_Nome() const { return nome; }
+const std::string& Aventureiro::Get_Nome() const { return nome; }
 int Aventureiro::Get_Tamanho_Build() const { return build.Get_Tamanho(); }
+
+void Aventureiro::Copia_Build(Lista<unsigned int>& lista) const { build.Percorrer_Pilha(lista); }
 
 void Aventureiro::Set_Id(unsigned int _id) { id = _id; }
 void Aventureiro::Set_Nome(const std::string& _nome) { nome = _nome; }

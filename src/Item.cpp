@@ -12,11 +12,11 @@ Item& Item::operator= (const Item &i) {
 }
 Item::~Item() {}
 
-unsigned int Item::Get_Id() { return id; }
-std::string Item::Get_Nome() { return nome; }
+unsigned int Item::Get_Id() const { return id; }
+const std::string& Item::Get_Nome() const { return nome; }
 
 void Item::Set_Id(unsigned int _id) { id = _id; }
-void Item::Set_Nome(std::string _nome) { nome = _nome; }
+void Item::Set_Nome(const std::string& _nome) { nome = _nome; }
 
 std::ostream& operator<<(std::ostream& os, const Item& i) {
     os << i.id << ":" << i.nome;

@@ -11,9 +11,9 @@ class Lista {
         void Insere_Inicio(const TipoItem& item);
         void Insere_Final(const TipoItem& item);
         void Insere_Posicao(const TipoItem& item, int pos);
-        TipoItem Remove_Inicio();
-        TipoItem Remove_Final();
-        TipoItem Remove_Posicao(int pos);
+        TipoItem& Remove_Inicio();
+        TipoItem& Remove_Final();
+        TipoItem& Remove_Posicao(int pos);
         TipoItem Pesquisa(int valor);
         void Imprime();
         void Limpa();

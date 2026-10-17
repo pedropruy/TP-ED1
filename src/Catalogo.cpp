@@ -23,8 +23,20 @@ char Catalogo::Trocar_de_Modo(char modo) {
     matriz = nova;
     return novo_modo;
 }
+ 
+int Catalogo::Get_Tamanho_Atributos() const {
+    int linhas, colunas;
+    matriz->Get_Dimensoes(linhas, colunas);
+    return colunas;
+}
 
-int Catalogo::Get_Celula(int id_i, int id_a) const { matriz->Get(id_i, id_a); }
+int Catalogo::Get_Tamanho_Itens() const {
+    int linhas, colunas;
+    matriz->Get_Dimensoes(linhas, colunas);
+    return linhas;
+}
+
+int Catalogo::Get_Celula(int id_i, int id_a) const { return matriz->Get(id_i, id_a); }
 
 void Catalogo::Set_Celula(int id_i, int id_a, int valor) { matriz->Set(id_i, id_a, valor); }
 
@@ -34,6 +46,10 @@ void Catalogo::Novo_Atributo() { matriz->Adicionar_Coluna(); }
 
 void Catalogo::Remocao_Celula(int id_i, int id_a) { Set_Celula(id_i, id_a, 0); }
 
+void Catalogo::Somar_Linha(int id_i, int* vetor) {
+    matriz->Somar_Linha(id_i, vetor);
+}
+
 void Catalogo::Percurso_Linha(int id_i, Lista<Consulta>& resultados) const {
     matriz->Percorrer_Linha(id_i, resultados);
 }
@@ -42,6 +58,6 @@ void Catalogo::Percurso_Coluna(int id_a, Lista<Consulta>& resultados) const {
     matriz->Percorrer_Coluna(id_a, resultados);
 }
 
-double Catalogo::Produto_Interno(int id_i, const double* vetor_build) const {}
+//double Catalogo::Produto_Interno(int id_i, const double* vetor_build) const {}
 
 void Catalogo::Imprime() const { matriz->Imprime(); }

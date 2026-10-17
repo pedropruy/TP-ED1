@@ -36,6 +36,23 @@ void MatrizCOO::Set(int i, int j, valor v) {
 void MatrizCOO::Adicionar_Linha() { l++; }
 void MatrizCOO::Adicionar_Coluna() { c++; }
 
+void MatrizCOO::Somar_Linha(int i, int* vetor, int sinal) {
+    bool achou = false;
+    // Buscar por (i,0) sempre irá devolver um item ou a última posição perto desse item
+    int pos = Busca_Binaria(i, 0, achou); 
+    
+    Tripleta t;
+    
+    for (int k = pos-1; k < tripletas.Get_Tamanho(); k++) {
+        t = tripletas.Get_Item(k);
+        
+        // Como o vetor é ordenado, se a primeira posição é maior então linha é vazia
+        if (t.lin > i) break; 
+        
+        if (t.lin == i) vetor[t.col] += (t.val * sinal);
+    }
+}
+
 void MatrizCOO::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
     bool achou = false;
     // Buscar por (i,0) sempre irá devolver um item ou a última posição perto desse item
@@ -250,6 +267,14 @@ valor* MatrizEncadeada::Produto(const valor* v, int dim_v) {
         }
     }
     return vetor_res;
+}
+
+void MatrizEncadeada::Somar_Linha(int i, int* vetor, int sinal) {
+    Celula* p = cabLin.Get_Item(i)->proxLin;
+    while (p != nullptr) {
+        vetor[p->col] += (p->val * sinal);
+        p = p->proxLin;
+    }
 }
 
 void MatrizEncadeada::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
