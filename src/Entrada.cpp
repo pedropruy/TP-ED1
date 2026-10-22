@@ -4,29 +4,6 @@
 #include <sstream>
 #include <iomanip>
 
-/*void Main_Fake() {
-    std::ifstream arq("../bin/entrada.txt");
-    if(!arq.is_open()) {
-        std::cout << "Erro ao abrir arquivo de entrada\n";
-        return;
-    }
-
-    Catalogo catalogo;
-
-    std::string linha;   
-    try {
-        while(std::getline(std::cin, linha)) { 
-            if (linha.empty()) continue; // caso tenha uma linha vazia
-
-            Comando(catalogo, linha);
-        }
-    } catch (std::exception& e) { e.what(); }
-
-    std::cout << "fim" << std::endl;
-
-    arq.close();
-}*/
-
 void Terminal_Modo(Forja& j, std::stringstream& ss) {
     char modo;
     ss >> modo;
@@ -38,7 +15,7 @@ void Terminal_Modo(Forja& j, std::stringstream& ss) {
 void Terminal_Atributo(Forja& j, std::stringstream& ss) {
     std::string nome;
     ss >> nome;
-    std::cout << "I " << j.Cadastro_Atributo(nome) << std::endl;
+    std::cout << "A " << j.Cadastro_Atributo(nome) << std::endl;
 }
 
 void Terminal_Item(Forja& j, std::stringstream& ss) {
@@ -77,8 +54,9 @@ void Terminal_Forjada(Forja& j, std::stringstream& ss) {
     
     for (int i = 1; i <= turnos; i++) {
         Pedido& pedido = atendidos.Get_Item(i-1); // i começa em 1
-        std::cout << "endomenda_" << i << " " << pedido.id_aventureiro
-                  << " " << pedido.id_item << " "; 
+        std::cout << "encomenda_" << i << " " << pedido.id_aventureiro
+                  << " " << pedido.id_item; 
+        if (i < turnos) std::cout << " ";
     }
     if(turnos > 0) std::cout << std::endl;
 }

@@ -11,6 +11,33 @@ template<typename TipoItem>
 Lista<TipoItem>::~Lista() { delete[] itens; }
 
 template<typename TipoItem>
+Lista<TipoItem>::Lista(const Lista<TipoItem> &l) {
+    this->tamanho = l.tamanho;
+    this->capacidade = l.capacidade;
+    this->itens = new TipoItem[this->capacidade];
+    
+    for (int i = 0; i < this->tamanho; i++)
+        this->itens[i] = l.itens[i];
+}
+
+template<typename TipoItem>
+Lista<TipoItem>& Lista<TipoItem>::operator= (const Lista<TipoItem> &l) {
+    if (this == &l) {
+        return *this;
+    }
+
+    delete[] this->itens;
+    this->tamanho = l.tamanho;
+    this->capacidade = l.capacidade;
+
+    this->itens = new TipoItem[this->capacidade];
+    for (int i = 0; i < this->tamanho; i++)
+        this->itens[i] = l.itens[i];
+
+    return *this;
+}
+
+template<typename TipoItem>
 int Lista<TipoItem>::Get_Tamanho() { return tamanho; }
 
 template<typename TipoItem>

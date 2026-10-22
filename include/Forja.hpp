@@ -5,8 +5,8 @@
 #include "Fila.hpp"
 #include "Item.hpp"
 #include "Atributo.hpp"
-#include "Aventureiro.hpp"
 #include "Catalogo.hpp"
+#include "Aventureiro.hpp"
 #include "Ordenacao.hpp"
 
 enum EstrategiaBuild { IMEDIATA, SOB_DEMANDA };
@@ -14,6 +14,8 @@ enum M { PODER, EQUILIBRIO, SINERGIA };
 
 struct Pedido { int id_aventureiro; int id_item; };
 struct Metrica { int enum_metrica; double peso; };
+struct PE { bool atualiza; double poder; double equilibrio; };
+struct Builds { bool atualiza; int valor; };
 
 class Forja {
     public:
@@ -46,9 +48,7 @@ class Forja {
         double Poder(int id_i);
         double Equilibrio(int id_i);
         double Sinergia(int id_v, int id_i, Lista<Consulta>& build, double norma_build);
-        EstrategiaBuild estrategia_atual;
-        bool atualizar_build = true;
-        Lista<double*> build;  // Em qual época o cache[id] foi gerado
+        EstrategiaBuild estrategia_atual = IMEDIATA;
         void Obter_Build(int id_v, Lista<Consulta>& build);  // Função que LH e Q chamam
 };
 

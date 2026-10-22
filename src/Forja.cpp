@@ -1,5 +1,7 @@
 #include "Forja.hpp"
 #include <cmath>
+#include <iomanip>
+#include <chrono>
 
 const std::string& Forja::Nome_Item(int ind) {
     if (ind < 0 || ind >= itens.Get_Tamanho())
@@ -38,6 +40,23 @@ int Forja::Cadastro_Item(const std::string& nome) {
 void Forja::Definir_Modificador(int id_i, int id_a, int valor) {
     if (id_i < 0 || id_i >= itens.Get_Tamanho()
      || id_a < 0 || id_a >= atributos.Get_Tamanho()) throw "Indices invalidos!";
+    if (estrategia_atual == IMEDIATA) {
+        int valor_antigo = catalogo.Get_Celula(id_i, id_a);
+        int diferenca = valor - valor_antigo;
+        if (diferenca != 0) {
+            for (int i = 0; i < aventureiros.Get_Tamanho(); i++) {
+                Aventureiro& a = aventureiros.Get_Item(i);
+                Lista<unsigned int> build;
+                a.Copia_Build(build);
+                int ocorrencias = 0;
+                for (int j = 0; j < build.Get_Tamanho(); j++)
+                    if (build.Get_Item(j) == (unsigned int)id_i)
+                        ocorrencias++;
+                if (ocorrencias > 0)
+                    a.Soma_Atributo(id_a, diferenca * ocorrencias);
+            }
+        }
+    }
     catalogo.Set_Celula(id_i, id_a, valor);
 }
         
@@ -60,9 +79,18 @@ int Forja::Turnos_de_Trabalho(int turnos, Lista<Pedido>& atendidas) {
     Pedido p;
     int forjadas = 0;
 
+    Lista<Consulta> lista;
     while (forjadas < turnos && encomendas.Get_Tamanho() > 0) {
         p = encomendas.Desenfileira();
-        aventureiros.Get_Item(p.id_aventureiro).Equipar_Item(p.id_item);
+        Aventureiro &a = aventureiros.Get_Item(p.id_aventureiro);
+        
+        if (estrategia_atual == IMEDIATA) {
+            catalogo.Percurso_Linha(p.id_item, lista);
+            a.Atualizar_Atributo(lista, 1);
+            lista.Limpa();
+        }
+
+        a.Equipar_Item(p.id_item);
         atendidas.Insere_Final(p);
         forjadas++;
     }
@@ -73,7 +101,15 @@ int Forja::Desequipar(int id_v) {
     if (id_v < 0 || id_v >= aventureiros.Get_Tamanho()) throw "Indices invalidos!";
     Aventureiro& a = aventureiros.Get_Item(id_v);
     if (a.Get_Tamanho_Build() == 0) return -1;
-    return itens.Get_Item(a.Desequipar_Item()).Get_Id();
+    int id_item = a.Desequipar_Item();
+
+    if (estrategia_atual == IMEDIATA) {
+        Lista<Consulta> lista;
+        catalogo.Percurso_Linha(id_item, lista);
+        a.Atualizar_Atributo(lista, -1);
+    }
+
+    return id_item;
 }
         
 void Forja::Consulta_Item(int id_i, Lista<Consulta>& lista) const {
@@ -87,9 +123,7 @@ void Forja::Consulta_Atributo(int id_a, Lista<Consulta>& lista) const {
         
 void Forja::Consulta_Atributo_Intervalo(int id_a, int min, int max, Lista<Consulta>& lista) const {
     catalogo.Percurso_Linha(id_a, lista);
-    std::cout << "Tem que fazer algo!" << std::endl;
-
-    // Função para ordenar lista entre válidos e inválidos
+    
 }
         
 void Forja::Consulta_Build(int id_v, Lista<Consulta>& lista) {
@@ -98,9 +132,13 @@ void Forja::Consulta_Build(int id_v, Lista<Consulta>& lista) {
 
 void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
                                   Lista<Ranking>& recomendacao, bool sinergia) {
+
     Lista<Consulta> atributos_v;
+    MetricasAnalise analise;
     Obter_Build(id_v, atributos_v);
-    int i; double norma_build = 0;
+    int i;
+    
+    double norma_build = 0;
     if (sinergia) {
         // Calcula raiz do tercerio somatório de sinergia
         for (i = 0; i < atributos_v.Get_Tamanho(); i++) {
@@ -127,8 +165,9 @@ void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
             } else if (m.enum_metrica == EQUILIBRIO) { r.pontuacao = Equilibrio(r.id_item);
             } else r.pontuacao = Sinergia(id_v, r.id_item, atributos_v, norma_build);
         }
-        //Insercao(aux); QuickSort(aux);
-        MergeSort(aux);
+
+        //Insercao(aux, analise);MergeSort(aux, analise);
+         QuickSort(aux, analise);
 
         for (j = 0; j < N; j++) {
             total.Get_Item(aux.Get_Item(j).id_item).pontuacao += (N-j) * m.peso;
@@ -142,8 +181,8 @@ void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
     for (i = 0; i < build.Get_Tamanho(); i++)
         equipado.Get_Item(build.Get_Item(i)) = true;
 
-    //Insercao(total); QuickSort(total);
-    MergeSort(total);
+    //Insercao(total, analise);MergeSort(total, analise);
+     QuickSort(total, analise);
     
     recomendacao.Limpa();
     for (j = 0; j < N && recomendacao.Get_Tamanho() < n; j++)
@@ -227,20 +266,24 @@ double Forja::Sinergia(int id_v, int id_i, Lista<Consulta>& build, double norma_
 void Forja::Obter_Build(int id_v, Lista<Consulta>& build) {
     build.Limpa();
 
-    Lista<unsigned int> itens_equipados;
-    aventureiros.Get_Item(id_v).Copia_Build(itens_equipados);
-    int tam_atributos = atributos.Get_Tamanho();
-    int* build_temporario = new int[tam_atributos];
-    for (int i = 0; i < tam_atributos; i++)
-        build_temporario[i] = 0;
-    for (int i = 0; i < itens_equipados.Get_Tamanho(); i++)
-        catalogo.Somar_Linha(itens_equipados.Get_Item(i), build_temporario);
+    if (estrategia_atual == IMEDIATA)
+        aventureiros.Get_Item(id_v).Copia_Atributo_Build(build);
+    else {
+        Lista<unsigned int> itens_equipados;
+        aventureiros.Get_Item(id_v).Copia_Build(itens_equipados);
+        int tam_atributos = atributos.Get_Tamanho();
+        // Cria vetor de zera ele automaticamente
+        int* build_temporario = new int[tam_atributos]{};
 
-    Consulta c;
-    for (int i = 0; i < tam_atributos; i++)
-        if (build_temporario[i] != 0) {
-            c.id_objeto = i; c.valor = build_temporario[i];
-            build.Insere_Final(c);
-        } 
-    delete[] build_temporario;
+        for (int i = 0; i < itens_equipados.Get_Tamanho(); i++)
+            catalogo.Somar_Linha(itens_equipados.Get_Item(i), build_temporario);
+
+        Consulta c;
+        for (int i = 0; i < tam_atributos; i++)
+            if (build_temporario[i] != 0) {
+                c.id_objeto = i; c.valor = build_temporario[i];
+                build.Insere_Final(c);
+            } 
+        delete[] build_temporario;
+    }
 }

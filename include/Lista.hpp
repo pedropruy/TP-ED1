@@ -3,8 +3,15 @@
 
 template<typename TipoItem>
 class Lista {
+    private:
+        int tamanho;
+        int capacidade;
+        TipoItem* itens;
+        void Dobrar_Tamanho();
     public:
         Lista(); ~Lista();
+        Lista(const Lista &l);
+        Lista& operator= (const Lista &l);
         int Get_Tamanho(); int Get_Tamanho() const;
         TipoItem& Get_Item(int ind); TipoItem& Get_Item(int ind) const;
         void Set_Item(const TipoItem& item, int ind);
@@ -17,11 +24,6 @@ class Lista {
         TipoItem Pesquisa(int valor);
         void Imprime();
         void Limpa();
-    private:
-        int tamanho;
-        int capacidade;
-        TipoItem* itens;
-        void Dobrar_Tamanho();
 };
 
 #include "Lista.tpp"

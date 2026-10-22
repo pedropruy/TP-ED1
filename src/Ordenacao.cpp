@@ -1,8 +1,10 @@
 #include "Lista.hpp"
 #include "Ordenacao.hpp"
 #include <cmath>
+#include <chrono>
 
-void Insercao (Lista<Ranking>& lista) {
+void Insercao (Lista<Ranking>& lista, MetricasAnalise& m) {
+    auto inicio = std::chrono::high_resolution_clock::now();
     int i, j;
     Ranking item_i;
     
@@ -16,6 +18,8 @@ void Insercao (Lista<Ranking>& lista) {
             Ranking item_j = lista.Get_Item(j);            
             long long val_j = std::round(item_j.pontuacao * 1000000.0);
 
+            m.comparacoes++;
+
             // Valor ser maior OU Se for o mesmo valor -> id é menor
             if (val_i > val_j || (val_i == val_j && item_i.id_item < item_j.id_item)) {
                 lista.Set_Item(item_j, j + 1); j--;
@@ -24,9 +28,12 @@ void Insercao (Lista<Ranking>& lista) {
         // Insere o r na posição onde foi trocada
         lista.Set_Item(item_i, j+1);
     }
+
+    auto fim = std::chrono::high_resolution_clock::now();
+    m.tempo_execucao_ms += std::chrono::duration<double, std::milli>(fim - inicio).count();
 }
 
-void Merge(Lista<Ranking>& v, int e, int meio, int d, Ranking* aux) {
+void Merge(Lista<Ranking>& v, int e, int meio, int d, Ranking* aux, MetricasAnalise& m) {
     int i = e, j = meio + 1, k = e;
     
     while (i <= meio && j <= d) {
@@ -36,6 +43,8 @@ void Merge(Lista<Ranking>& v, int e, int meio, int d, Ranking* aux) {
         long long val_i = std::round(item_i.pontuacao * 1000000.0);
         long long val_j = std::round(item_j.pontuacao * 1000000.0);
         
+        m.comparacoes++;
+
         // Valor ser maior OU Se for o mesmo valor -> id é menor
         if (val_i > val_j || (val_i == val_j && item_i.id_item < item_j.id_item)) {
             aux[k++] = item_i; i++;
@@ -50,28 +59,41 @@ void Merge(Lista<Ranking>& v, int e, int meio, int d, Ranking* aux) {
     for (k = e; k <= d; k++) v.Set_Item(aux[k], k);
 }
 
-void Passo_Recursivo(Lista<Ranking>& lista, int e, int d, Ranking* aux) {
+void Passo_Recursivo(Lista<Ranking>& lista, int e, int d, Ranking* aux, MetricasAnalise& m) {
     if (e < d) {
         int meio = e + (d - e) / 2;
-        Passo_Recursivo(lista, e, meio, aux);
-        Passo_Recursivo(lista, meio + 1, d, aux);
-        Merge(lista, e, meio, d, aux);
+        Passo_Recursivo(lista, e, meio, aux, m);
+        Passo_Recursivo(lista, meio + 1, d, aux, m);
+        Merge(lista, e, meio, d, aux, m);
     }
 }
 
-void MergeSort(Lista<Ranking>& lista) {
+void MergeSort(Lista<Ranking>& lista, MetricasAnalise& m) {
+    auto inicio = std::chrono::high_resolution_clock::now();
+
     int tamanho = lista.Get_Tamanho();
     
     if (tamanho > 1) {
         // Alocamos vetor aux com tamanho exato e já deletamos ele
         Ranking* aux = new Ranking[tamanho];
-        Passo_Recursivo(lista, 0, tamanho - 1, aux);
+        Passo_Recursivo(lista, 0, tamanho - 1, aux, m);
         delete[] aux; 
     }
+
+    auto fim = std::chrono::high_resolution_clock::now();
+    m.tempo_execucao_ms += std::chrono::duration<double, std::milli>(fim - inicio).count();
 }
 
-int Particao_Lomuto(Lista<Ranking>& lista, int p, int r) {
-    Ranking x = lista.Get_Item(r); // pivô: o último elemento
+int Particao_Lomuto(Lista<Ranking>& lista, int p, int r, MetricasAnalise& m) {
+    // Iremos escolher o pivô sempre ao meio
+    int pos_pivo = p + (r - p) / 2;
+    // Troca de lugar o pivô meio com o do fim
+    Ranking temp_pivo = lista.Get_Item(pos_pivo);
+    Ranking temp_fim = lista.Get_Item(r);
+    lista.Set_Item(temp_fim, pos_pivo);
+    lista.Set_Item(temp_pivo, r);
+
+    Ranking x = lista.Get_Item(r); // pivô: número do meio
     long long val_x = std::round(x.pontuacao * 1000000.0);
     
     int i = p - 1;
@@ -80,6 +102,8 @@ int Particao_Lomuto(Lista<Ranking>& lista, int p, int r) {
         Ranking item_j = lista.Get_Item(j);
         long long val_j = std::round(item_j.pontuacao * 1000000.0);
         
+        m.comparacoes++;
+
         // Valor ser maior OU Se for o mesmo valor -> id é menor
         if (val_j > val_x || (val_j == val_x && item_j.id_item < x.id_item)) {
             i++;
@@ -98,16 +122,21 @@ int Particao_Lomuto(Lista<Ranking>& lista, int p, int r) {
     return i + 1; // retornando a posição do pivô
 }
 
-void Ordena(int Esq, int Dir, Lista<Ranking>& lista) {
+void Ordena(int Esq, int Dir, Lista<Ranking>& lista, MetricasAnalise& m) {
     if (Esq < Dir) {
-        int q = Particao_Lomuto(lista, Esq, Dir);
+        int q = Particao_Lomuto(lista, Esq, Dir, m);
         // Como estamos usando Partição de Lomuto, q já está na posição correta
-        Ordena(Esq, q - 1, lista);
-        Ordena(q + 1, Dir, lista);
+        Ordena(Esq, q - 1, lista, m);
+        Ordena(q + 1, Dir, lista, m);
     }
 }
 
-void QuickSort(Lista<Ranking>& lista) { 
+void QuickSort(Lista<Ranking>& lista, MetricasAnalise& m) { 
+    auto inicio = std::chrono::high_resolution_clock::now();
+
     if (lista.Get_Tamanho() <= 1) return;
-    Ordena(0, lista.Get_Tamanho() - 1, lista); 
+    Ordena(0, lista.Get_Tamanho() - 1, lista, m); 
+
+    auto fim = std::chrono::high_resolution_clock::now();
+    m.tempo_execucao_ms += std::chrono::duration<double, std::milli>(fim - inicio).count();
 }
