@@ -13,11 +13,10 @@ void Aventureiro::Copia_Atributo_Build(Lista<Consulta>& lista) const {
     lista.Limpa();
     if (atributo_build.Get_Tamanho() == 0) return;
     
-    Consulta c; 
     for (int i = 0; i < atributo_build.Get_Tamanho(); i++) {
         int valor = atributo_build.Get_Item(i);
         if (valor != 0) {
-            c.id_objeto = i; c.valor = valor;
+            Consulta c = {i, valor}; 
             lista.Insere_Final(c);
         }
     }

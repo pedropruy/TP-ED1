@@ -36,7 +36,7 @@ $(OBJ_DIR)/Aventureiro.o: $(SRC_DIR)/Aventureiro.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/Matriz.o: $(SRC_DIR)/Matriz.cpp
+$(OBJ_DIR)/Matriz.o: $(SRC_DIR)/Matriz_COO.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

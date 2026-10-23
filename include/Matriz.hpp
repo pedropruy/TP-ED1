@@ -20,7 +20,7 @@ class Matriz {
         virtual void Somar_Linha(int id_i, int* vetor, int sinal = 1) = 0;
         virtual void Percorrer_Linha(int i, Lista<Consulta>& resultados) = 0;
         virtual void Percorrer_Coluna(int j, Lista<Consulta>& resultados) = 0;
-        virtual void Converter_Matriz(Matriz& m) = 0;
+        virtual void Converter_Matriz(Matriz& m, char tipo) = 0;
         virtual void Imprime() const = 0;
 };
 
@@ -38,7 +38,7 @@ class MatrizCOO : public Matriz {
         void Somar_Linha(int id_i, int* vetor, int sinal) override;
         void Percorrer_Linha(int i, Lista<Consulta>& resultados) override;
         void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
-        void Converter_Matriz(Matriz& m) override;
+        void Converter_Matriz(Matriz& m, char tipo) override;
         void Imprime() const override;
     private:
         int l, c;    // dimensoes da matriz representada
@@ -47,7 +47,34 @@ class MatrizCOO : public Matriz {
         int Busca_Binaria(int i, int j, bool& achou) const;
         void Insere_Elemento(int pos, int i, int j, valor v);  
         void Remove_Elemento(int pos);
-        friend class MatrizEncadeada;
+        void Converter_em_CSR(Matriz& m);
+        void Converter_em_Encadeada(Matriz& m);
+        friend class MatrizEncadeada; friend class MatrizCSR;
+};
+
+
+class MatrizCSR : public Matriz {
+    public:
+        MatrizCSR(int linhas_, int colunas_);
+        valor Get(int i, int j) const override;
+        void Get_Dimensoes(int& lin, int& col) override;
+        void Set(int i, int j, valor v) override;
+        void Adicionar_Linha() override; void Adicionar_Coluna() override;
+        void Somar_Linha(int id_i, int* vetor, int sinal) override;
+        void Percorrer_Linha(int i, Lista<Consulta>& resultados) override;
+        void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
+        void Converter_Matriz(Matriz& m, char tipo) override;
+        void Imprime() const override;
+    private:
+        int l, c, tamanho;
+        Lista<int> linhas; // l+1 posicoes: linha i ocupa [linhas[i], linhas[i+1])
+        Lista<int> colunas; // tamanho posicoes
+        Lista<valor> valores; // tamanho posicoes
+        void InsereElemento(int i, int j, int p, valor v); // abre a posicao p na linha i
+        void RemoveElemento(int i, int p);
+        void Converter_em_COO(Matriz& m);
+        void Converter_em_Encadeada(Matriz& m);
+        friend class MatrizCOO; friend class MatrizEncadeada;
 };
 
 struct Celula {
@@ -69,7 +96,7 @@ class MatrizEncadeada : public Matriz {
         void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
         valor Soma_Coluna(int j) const;  // percorre so a lista da coluna j
         valor* Produto(const valor* v, int dim_v);
-        void Converter_Matriz(Matriz& m) override;
+        void Converter_Matriz(Matriz& m, char tipo) override;
         void Imprime() const override;
     private:
         // Reorganizar a implementação para usar Lista
@@ -79,7 +106,9 @@ class MatrizEncadeada : public Matriz {
         Lista<Celula*> cabCol;  // cabCol.Get_Item(j): celula cabeca da coluna j
         Celula* AntLinha(int i, int j) const;
         Celula* AntColuna(int i, int j) const;
-        friend class MatrizCOO;
+        void Converter_em_COO(Matriz& m);
+        void Converter_em_CSR(Matriz& m);
+        friend class MatrizCOO; friend class MatrizCSR;
 };
 
 #endif

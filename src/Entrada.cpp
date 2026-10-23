@@ -7,7 +7,8 @@
 void Terminal_Modo(Forja& j, std::stringstream& ss) {
     char modo;
     ss >> modo;
-    if (modo == 'L' || modo == 'T') 
+
+    if (modo == 'L' || modo == 'T' || modo == 'C') 
         std::cout << "E " << j.Modo(modo) << std::endl;
     else std::cout << "Modo invalido!" << std::endl;
 }

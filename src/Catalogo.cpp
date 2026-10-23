@@ -1,27 +1,32 @@
 #include "Catalogo.hpp"
 
-Catalogo::Catalogo() { matriz = new MatrizCOO(0,0); }
+Catalogo::Catalogo() { matriz = new MatrizCSR(0,0); }
 
 Catalogo::~Catalogo() { delete matriz; }
 
 char Catalogo::Trocar_de_Modo(char modo) {
+    bool COO = (dynamic_cast<MatrizCOO*>(matriz) != nullptr),
+         CSR = (dynamic_cast<MatrizCSR*>(matriz) != nullptr),
+         Encadeada = (dynamic_cast<MatrizEncadeada*>(matriz) != nullptr);
+
+    // Se a matriz já estiver no modo retorna sem fazer nada
+    if ((modo == 'T' && COO) || (modo == 'C' && CSR) ||
+        (modo == 'L' && Encadeada)) return modo;
+
     int lin = 0, col = 0;
-    char novo_modo = 'X';
     matriz->Get_Dimensoes(lin, col);
-    Matriz* nova;
-    if (modo == 'L' && dynamic_cast<MatrizCOO*>(matriz) != nullptr) {
-        nova = new MatrizEncadeada(lin, col);
-        matriz->Converter_Matriz(*nova);
-        novo_modo = 'L';
-    } 
-    else if (modo == 'T' && dynamic_cast<MatrizEncadeada*>(matriz) != nullptr) {
-        nova = new MatrizCOO(lin, col);
-        matriz->Converter_Matriz(*nova);
-        novo_modo = 'T';
-    } else return modo;
+    Matriz* nova = nullptr;
+
+    // Cria o objeto de destino baseado unicamente no modo solicitado
+    if (modo == 'T') nova = new MatrizCOO(lin, col);
+    else if (modo == 'C') nova = new MatrizCSR(lin, col);
+    else if (modo == 'L') nova = new MatrizEncadeada(lin, col);
+    else return modo; // Modo inválido
+
+    matriz->Converter_Matriz(*nova, modo);
     delete matriz;
     matriz = nova;
-    return novo_modo;
+    return modo;
 }
  
 int Catalogo::Get_Tamanho_Atributos() const {

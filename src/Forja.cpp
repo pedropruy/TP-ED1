@@ -132,7 +132,7 @@ void Forja::Consulta_Build(int id_v, Lista<Consulta>& lista) {
 
 void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
                                   Lista<Ranking>& recomendacao, bool sinergia) {
-
+    auto inicio = std::chrono::high_resolution_clock::now();
     Lista<Consulta> atributos_v;
     MetricasAnalise analise;
     Obter_Build(id_v, atributos_v);
@@ -166,8 +166,8 @@ void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
             } else r.pontuacao = Sinergia(id_v, r.id_item, atributos_v, norma_build);
         }
 
-        //Insercao(aux, analise);MergeSort(aux, analise);
-         QuickSort(aux, analise);
+        Insercao(aux, analise);
+        //MergeSort(aux, analise); QuickSort(aux, analise);
 
         for (j = 0; j < N; j++) {
             total.Get_Item(aux.Get_Item(j).id_item).pontuacao += (N-j) * m.peso;
@@ -181,13 +181,17 @@ void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
     for (i = 0; i < build.Get_Tamanho(); i++)
         equipado.Get_Item(build.Get_Item(i)) = true;
 
-    //Insercao(total, analise);MergeSort(total, analise);
-     QuickSort(total, analise);
+    Insercao(total, analise);
+    //MergeSort(total, analise); QuickSort(total, analise);
     
     recomendacao.Limpa();
     for (j = 0; j < N && recomendacao.Get_Tamanho() < n; j++)
         if (!equipado.Get_Item(total.Get_Item(j).id_item))
             recomendacao.Insere_Final(total.Get_Item(j));
+    
+    auto fim = std::chrono::high_resolution_clock::now();
+    double tempo_execucao_ms = std::chrono::duration<double, std::milli>(fim - inicio).count();
+    std::cout << std::fixed << std::setprecision(4) << tempo_execucao_ms << std::endl;
 }
 
 void Forja::Imprime() const { catalogo.Imprime(); }
@@ -208,21 +212,30 @@ double Forja::Poder(int id_i) {
 double Forja::Equilibrio(int id_i) {
     if (id_i < 0 || id_i >= itens.Get_Tamanho())
         throw "Indices invalidos!";
-    if (atributos.Get_Tamanho() == 0) return 1.0;
+
+    int T = atributos.Get_Tamanho();
+    if (T == 0) return 1.0;
 
     Lista<Consulta> lista; // Guarda id_atributos e valor do item
     catalogo.Percurso_Linha(id_i, lista);
     if (lista.Get_Tamanho() == 0) return 1.0;
 
-    double T = atributos.Get_Tamanho();
-    double media = Poder(id_i) / T, somatorio = 0;
+    double media = Poder(id_i) / T;
+
+    // Atributos sem célula: modificador igual a zero.
+    int zeros = T - lista.Get_Tamanho();
+    double somatorio = zeros * media * media; // Σ (0 - média)² = média² * qnts_zeros
+
+    // Atributos com modificadores não nulos.
     for (int i = 0; i < lista.Get_Tamanho(); i++) {
         double v = lista.Get_Item(i).valor;
-        double subtracao = v - media; 
-        somatorio += (subtracao)*(subtracao);
+        double diferenca = v - media;
+        somatorio += diferenca * diferenca;
     }
+
     double variancia = somatorio / T;
     if (variancia < 0) variancia = 0; // ruído de ponto flutuante
+
     return 1.0 / (1.0 + sqrt(variancia));
 }
 
@@ -278,10 +291,9 @@ void Forja::Obter_Build(int id_v, Lista<Consulta>& build) {
         for (int i = 0; i < itens_equipados.Get_Tamanho(); i++)
             catalogo.Somar_Linha(itens_equipados.Get_Item(i), build_temporario);
 
-        Consulta c;
         for (int i = 0; i < tam_atributos; i++)
             if (build_temporario[i] != 0) {
-                c.id_objeto = i; c.valor = build_temporario[i];
+                Consulta c = {i, build_temporario[i]};
                 build.Insere_Final(c);
             } 
         delete[] build_temporario;
