@@ -36,6 +36,6 @@ class FilaEncadeada {
         TipoCelula<TipoItem>* tras;
 };
 
-#include "Fila.tpp"
+#include "../src/Fila.cpp"
 
 #endif

@@ -26,6 +26,6 @@ class TipoCelula {
         friend class PilhaEncadeada<TipoItem>;
 };
 
-#include "TipoCelula.tpp"
+#include "../src/TipoCelula.cpp"
 
 #endif

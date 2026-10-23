@@ -4,7 +4,7 @@
 #include <fstream>
 
 int main() {
-    std::ifstream arq("estresse.txt");
+    std::ifstream arq("entrada_DC.txt");
     if(!arq.is_open()) {
         std::cout << "Erro ao abrir arquivo de entrada\n";
         return 0;

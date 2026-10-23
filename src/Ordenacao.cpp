@@ -140,3 +140,60 @@ void QuickSort(Lista<Ranking>& lista, MetricasAnalise& m) {
     auto fim = std::chrono::high_resolution_clock::now();
     m.tempo_execucao_ms += std::chrono::duration<double, std::milli>(fim - inicio).count();
 }
+
+int Particao_Lomuto(Lista<Consulta>& lista, int p, int r, MetricasAnalise& m) {
+    // Iremos escolher o pivô sempre ao meio
+    int pos_pivo = p + (r - p) / 2;
+    // Troca de lugar o pivô meio com o do fim
+    Consulta temp_pivo = lista.Get_Item(pos_pivo);
+    Consulta temp_fim = lista.Get_Item(r);
+    lista.Set_Item(temp_fim, pos_pivo);
+    lista.Set_Item(temp_pivo, r);
+
+    Consulta x = lista.Get_Item(r); // pivô: número do meio
+    int ind_x = x.id_objeto;
+    
+    int i = p - 1;
+    
+    for (int j = p; j < r; j++) {
+        Consulta item_j = lista.Get_Item(j);
+        int ind_j = item_j.id_objeto;
+        
+        m.comparacoes++;
+
+        // Se indice for menor inverte de lugar
+        if (ind_j < ind_x) {
+            i++;
+            // invertendo o lugar de item_j com item_w
+            Consulta w = lista.Get_Item(i);
+            lista.Set_Item(item_j, i);
+            lista.Set_Item(w, j);
+        }
+    }
+    
+    // colocando w na posição de pivô
+    Consulta w = lista.Get_Item(i + 1);
+    lista.Set_Item(lista.Get_Item(r), i + 1);
+    lista.Set_Item(w, r);
+    
+    return i + 1; // retornando a posição do pivô
+}
+
+void Ordena(int Esq, int Dir, Lista<Consulta>& lista, MetricasAnalise& m) {
+    if (Esq < Dir) {
+        int q = Particao_Lomuto(lista, Esq, Dir, m);
+        // Como estamos usando Partição de Lomuto, q já está na posição correta
+        Ordena(Esq, q - 1, lista, m);
+        Ordena(q + 1, Dir, lista, m);
+    }
+}
+
+void QuickSort(Lista<Consulta>& lista, MetricasAnalise& m) { 
+    auto inicio = std::chrono::high_resolution_clock::now();
+
+    if (lista.Get_Tamanho() <= 1) return;
+    Ordena(0, lista.Get_Tamanho() - 1, lista, m); 
+
+    auto fim = std::chrono::high_resolution_clock::now();
+    m.tempo_execucao_ms += std::chrono::duration<double, std::milli>(fim - inicio).count();
+}

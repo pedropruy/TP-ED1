@@ -26,6 +26,6 @@ class Lista {
         void Limpa();
 };
 
-#include "Lista.tpp"
+#include "../src/Lista.cpp"
 
 #endif

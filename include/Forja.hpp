@@ -45,6 +45,10 @@ class Forja {
         Fila<Pedido> encomendas;
         Catalogo catalogo;
 
+        // Utilizado para o comando LF
+        Lista<Lista<Consulta>> indice_valores;
+        int Busca_Binaria(int valor, Consulta* c, int tam, bool estritamente_maior = false) const;
+
         double Poder(int id_i);
         double Equilibrio(int id_i);
         double Sinergia(int id_v, int id_i, Lista<Consulta>& build, double norma_build);

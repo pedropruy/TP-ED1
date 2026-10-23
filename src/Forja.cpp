@@ -27,6 +27,10 @@ int Forja::Cadastro_Atributo(const std::string& nome) {
     int id_a = atributos.Get_Tamanho();
     atributos.Insere_Final(Atributo(id_a, nome));
     catalogo.Novo_Atributo();
+    // Para o comando LF
+    Lista<Consulta> novo_atributo;
+    indice_valores.Insere_Final(novo_atributo);
+    
     return id_a;
 }
        
@@ -120,10 +124,76 @@ void Forja::Consulta_Atributo(int id_a, Lista<Consulta>& lista) const {
     catalogo.Percurso_Coluna(id_a, lista);
 
 }
-        
-void Forja::Consulta_Atributo_Intervalo(int id_a, int min, int max, Lista<Consulta>& lista) const {
-    catalogo.Percurso_Linha(id_a, lista);
     
+void Forja::Consulta_Atributo_Intervalo(int id_a, int min, int max, Lista<Consulta>& lista) const {
+    lista.Limpa();
+    Lista<Consulta> total;
+    MetricasAnalise analise;
+    catalogo.Percurso_Coluna(id_a, total);
+
+    // Caso intervalo abrangir 0, temos que incluir os ids em total
+    if (min <= 0 && max >= 0) {
+        bool* tem_valor = new bool[itens.Get_Tamanho()]{false};
+        for (int i = 0; i < total.Get_Tamanho(); i++) {
+            tem_valor[total.Get_Item(i).id_objeto] = true;
+        }
+        for (int i = 0; i < itens.Get_Tamanho(); i++) {
+            if (!tem_valor[i]) {
+                Consulta c = {i, 0};
+                total.Insere_Final(c);
+            }
+        }
+        delete[] tem_valor;
+    }
+
+    int tam = total.Get_Tamanho();
+    if (tam == 0) return;
+
+    // Extrai para um vetor temporario para ordenar por valor
+    Consulta* consultas = new Consulta[tam];
+    for (int i = 0; i < tam; i++) consultas[i] = total.Get_Item(i);
+
+    for (int i = 1; i < tam; i++) {
+        Consulta chave = consultas[i];
+        int j = i - 1;
+        while (j >= 0 && consultas[j].valor > chave.valor) {
+            consultas[j + 1] = consultas[j];
+            j--;
+        }
+        consultas[j + 1] = chave;
+    }
+
+    int id_min = Busca_Binaria(min, consultas, tam),
+        id_max = Busca_Binaria(max, consultas, tam, true);
+    // Insere vetor consulta na lista oficial
+    for (int i = id_min; i <= id_max; i++)
+        lista.Insere_Final(consultas[i]);
+    delete[] consultas;
+
+   QuickSort(lista, analise);
+}
+
+int Forja::Busca_Binaria(int valor, Consulta* c, int tam, bool maior) const {
+    int esq = 0, dir = tam - 1, id;
+    
+    if(maior) {
+        while (esq <= dir) {
+            int meio = esq + (dir - esq) / 2;
+            if (c[meio].valor <= valor) {
+                id = meio;      // Salva candidato
+                esq = meio + 1;     // Continua buscando mais à direita
+            } else dir = meio - 1;
+        }
+    } else {
+        while (esq <= dir) {
+            int meio = esq + (dir - esq) / 2;
+            if (c[meio].valor >= valor) {
+                id = meio;      // Salva candidato
+                dir = meio - 1;     // Continua buscando mais à esquerda
+            } else esq = meio + 1;
+        }
+    }    
+    return id;
 }
         
 void Forja::Consulta_Build(int id_v, Lista<Consulta>& lista) {
@@ -132,7 +202,6 @@ void Forja::Consulta_Build(int id_v, Lista<Consulta>& lista) {
 
 void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
                                   Lista<Ranking>& recomendacao, bool sinergia) {
-    auto inicio = std::chrono::high_resolution_clock::now();
     Lista<Consulta> atributos_v;
     MetricasAnalise analise;
     Obter_Build(id_v, atributos_v);
@@ -188,10 +257,6 @@ void Forja::Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
     for (j = 0; j < N && recomendacao.Get_Tamanho() < n; j++)
         if (!equipado.Get_Item(total.Get_Item(j).id_item))
             recomendacao.Insere_Final(total.Get_Item(j));
-    
-    auto fim = std::chrono::high_resolution_clock::now();
-    double tempo_execucao_ms = std::chrono::duration<double, std::milli>(fim - inicio).count();
-    std::cout << std::fixed << std::setprecision(4) << tempo_execucao_ms << std::endl;
 }
 
 void Forja::Imprime() const { catalogo.Imprime(); }
