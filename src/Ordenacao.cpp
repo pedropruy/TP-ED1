@@ -1,5 +1,5 @@
-#include "Lista.hpp"
-#include "Ordenacao.hpp"
+#include "../include/Lista.hpp"
+#include "../include/Ordenacao.hpp"
 #include <cmath>
 #include <chrono>
 

@@ -1,4 +1,4 @@
-//#include "Matriz_CSR.cpp"
+#include "../include/Matriz.hpp"
 
 MatrizEncadeada::MatrizEncadeada(int li, int co) {
     if (li < 0 || co < 0) throw "Tamanho invalido!";

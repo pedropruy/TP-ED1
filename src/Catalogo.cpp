@@ -1,4 +1,4 @@
-#include "Catalogo.hpp"
+#include "../include/Catalogo.hpp"
 
 Catalogo::Catalogo() { matriz = new MatrizCSR(0,0); }
 

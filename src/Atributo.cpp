@@ -1,4 +1,4 @@
-#include "Atributo.hpp"
+#include "../include/Atributo.hpp"
 #include <iostream>
 
 Atributo::Atributo(unsigned int _id, std::string _nome) : id(_id), nome(_nome) {}

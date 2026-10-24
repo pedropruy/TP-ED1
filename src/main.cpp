@@ -1,10 +1,10 @@
-#include "Forja.hpp"
-#include "Entrada.hpp"
+#include "../include/Forja.hpp"
+#include "../include/Entrada.hpp"
 #include <iostream>
 #include <fstream>
 
 int main() {
-    std::ifstream arq("entrada_DC.txt");
+    std::ifstream arq("estresse.txt");
     if(!arq.is_open()) {
         std::cout << "Erro ao abrir arquivo de entrada\n";
         return 0;

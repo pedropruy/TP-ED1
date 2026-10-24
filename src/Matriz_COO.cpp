@@ -1,4 +1,4 @@
-#include "Matriz.hpp"
+#include "../include/Matriz.hpp"
 
 Matriz::Matriz() {};
 Matriz::~Matriz() {};
@@ -208,6 +208,3 @@ void MatrizCOO::Insere_Elemento(int pos, int i, int j, valor v) {
 }
 
 void MatrizCOO::Remove_Elemento(int pos) { tripletas.Remove_Posicao(pos); }
-
-#include "Matriz_CSR.cpp"
-#include "Matriz_Encadeada.cpp"

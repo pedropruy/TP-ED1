@@ -44,6 +44,6 @@ class PilhaEncadeada {
         TipoCelula<TipoItem>* topo;
 };
 
-#include "../src/Pilha.cpp"
+#include "../src/Pilha.tpp"
 
 #endif

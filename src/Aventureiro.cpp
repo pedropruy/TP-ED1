@@ -1,4 +1,4 @@
-#include "Aventureiro.hpp"
+#include "../include/Aventureiro.hpp"
 #include <iostream>
 
 Aventureiro::Aventureiro(unsigned int _id, const std::string& _nome) : id(_id), nome(_nome) {}

@@ -1,4 +1,4 @@
-#include "Matriz.hpp"
+#include "../include/Matriz.hpp"
 
 MatrizCSR::MatrizCSR(int linhas_, int colunas_) : l(linhas_), c(colunas_) {
     tamanho = 0;
@@ -157,25 +157,6 @@ void MatrizCSR::Imprime() const {
         std::cout << std::endl;
     }
 }
-
-/*void MatrizCSR::Imprime() const {
-    for (int i = 0; i < l; i++) { // CORREÇÃO 1: i < l (imprime todas as linhas)
-        int inicio = linhas.Get_Item(i);
-        int fim = linhas.Get_Item(i + 1);
-        int p = inicio; // CORREÇÃO 2: p é posicionado no início da linha i
-
-        for (int j = 0; j < c; j++) {
-            // Verifica se ainda há elementos na linha i e se o próximo elemento pertence à coluna j
-            if (p < fim && colunas.Get_Item(p) == j) {
-                std::cout << valores.Get_Item(p) << " ";
-                p++;
-            } else {
-                std::cout << "0 ";
-            }
-        }
-        std::cout << std::endl;
-    }
-}*/
 
 void MatrizCSR::InsereElemento(int i, int j, int p, valor v) {
     // Função de Lista começa de 1, enquanto int p começa do 0

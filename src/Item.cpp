@@ -1,4 +1,4 @@
-#include "Item.hpp"
+#include "../include/Item.hpp"
 #include <iostream>
 
 Item::Item(unsigned int _id, std::string _nome) : id(_id), nome(_nome) {}
