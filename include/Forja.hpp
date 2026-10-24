@@ -46,8 +46,7 @@ class Forja {
         Catalogo catalogo;
 
         // Utilizado para o comando LF
-        Lista<Lista<Consulta>> indice_valores;
-        int Busca_Binaria(int valor, Consulta* c, int tam, bool estritamente_maior = false) const;
+        int Busca_Binaria(int valor, Consulta* c, int tam, bool maior = false) const;
 
         double Poder(int id_i);
         double Equilibrio(int id_i);

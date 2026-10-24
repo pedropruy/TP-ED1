@@ -27,9 +27,6 @@ int Forja::Cadastro_Atributo(const std::string& nome) {
     int id_a = atributos.Get_Tamanho();
     atributos.Insere_Final(Atributo(id_a, nome));
     catalogo.Novo_Atributo();
-    // Para o comando LF
-    Lista<Consulta> novo_atributo;
-    indice_valores.Insere_Final(novo_atributo);
     
     return id_a;
 }
@@ -165,34 +162,34 @@ void Forja::Consulta_Atributo_Intervalo(int id_a, int min, int max, Lista<Consul
 
     int id_min = Busca_Binaria(min, consultas, tam),
         id_max = Busca_Binaria(max, consultas, tam, true);
+
     // Insere vetor consulta na lista oficial
-    for (int i = id_min; i <= id_max; i++)
-        lista.Insere_Final(consultas[i]);
+    if (id_min != -1 && id_max != -1 && id_min <= id_max)
+        for (int i = id_min; i <= id_max; i++) 
+            lista.Insere_Final(consultas[i]);
     delete[] consultas;
 
    QuickSort(lista, analise);
 }
 
 int Forja::Busca_Binaria(int valor, Consulta* c, int tam, bool maior) const {
-    int esq = 0, dir = tam - 1, id;
+    int esq = 0, dir = tam - 1, id = -1;
     
-    if(maior) {
-        while (esq <= dir) {
-            int meio = esq + (dir - esq) / 2;
+    while (esq <= dir) {
+        int meio = esq + (dir - esq) / 2;
+        if(maior) {
             if (c[meio].valor <= valor) {
                 id = meio;      // Salva candidato
                 esq = meio + 1;     // Continua buscando mais à direita
             } else dir = meio - 1;
-        }
-    } else {
-        while (esq <= dir) {
-            int meio = esq + (dir - esq) / 2;
+        } else {
             if (c[meio].valor >= valor) {
                 id = meio;      // Salva candidato
                 dir = meio - 1;     // Continua buscando mais à esquerda
             } else esq = meio + 1;
         }
-    }    
+    }
+
     return id;
 }
         
