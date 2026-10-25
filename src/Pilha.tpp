@@ -36,6 +36,7 @@ void Pilha<TipoItem>::Copia(const Pilha& p) {
         
     if (p.itens != nullptr) {
         this->itens = new TipoItem[this->capacidade];
+        CONTA(ana, alocacoes, 1); CONTA(ana, copiados, this->tamanho);
         for (int i = 0; i < this->tamanho; i++)
             this->itens[i] = p.itens[i];
     } else this->itens = nullptr;
@@ -68,6 +69,7 @@ void Pilha<TipoItem>::Percorrer_Pilha(Lista<TipoItem>& lista) const {
     if (tamanho == 0) return;
     
     lista.Limpa();
+    CONTA(ana, celulas_visitadas, tamanho);
     for (int i = 0; i < tamanho; i++)
         lista.Insere_Final(itens[i]);
 }
@@ -83,6 +85,16 @@ template<typename TipoItem>
 void Pilha<TipoItem>::Limpa(){ tamanho = 0; topo = -1; }
 
 template<typename TipoItem>
+Analise Pilha<TipoItem>::Get_Analise() const { return ana; }
+
+template<typename TipoItem>
+void Pilha<TipoItem>::Zerar_Analise() { ana.Zerar(); }
+
+template<typename TipoItem>
+long long Pilha<TipoItem>::Bytes_Usados() const { return (long long)capacidade * sizeof(TipoItem); }
+
+
+template<typename TipoItem>
 void Pilha<TipoItem>::Dobrar_Tamanho(){
     int nova_capacidade = capacidade*2;
     TipoItem* novo_itens = new TipoItem[nova_capacidade]; 
@@ -90,6 +102,7 @@ void Pilha<TipoItem>::Dobrar_Tamanho(){
     for (int i = 0; i < tamanho; i++)
         novo_itens[i] = itens[i];
     
+    CONTA(ana, alocacoes, 1); CONTA(ana, liberacoes, 1); CONTA(ana, copiados, tamanho);
     delete[] itens;
     capacidade = nova_capacidade;
     itens = novo_itens;
@@ -123,6 +136,7 @@ void PilhaEncadeada<TipoItem>::Copia(const PilhaEncadeada& p) {
     if (p.topo == nullptr) { return; }
 
     this->topo = new TipoCelula<TipoItem>();
+    CONTA(ana, alocacoes, 1); CONTA(ana, copiados, 1);
     this->topo->item = p.topo->item;
     this->tamanho++;
 
@@ -131,6 +145,7 @@ void PilhaEncadeada<TipoItem>::Copia(const PilhaEncadeada& p) {
 
     while (iterador != nullptr) {
         aux->prox = new TipoCelula<TipoItem>();
+        CONTA(ana, alocacoes, 1); CONTA(ana, copiados, 1);
         aux = aux->prox;
             
         aux->item = iterador->item;
@@ -148,6 +163,7 @@ template<typename TipoItem>
 void PilhaEncadeada<TipoItem>::Empilha(const TipoItem& item){
     TipoCelula<TipoItem>* nova;
     nova = new TipoCelula<TipoItem>();
+    CONTA(ana, alocacoes, 1);
 
     nova->item = item;
     nova->prox = topo;
@@ -166,6 +182,7 @@ TipoItem PilhaEncadeada<TipoItem>::Desempilha() {
     p = topo;
     topo = topo->prox;
     delete p;
+    CONTA(ana, liberacoes, 1);
     tamanho--;
     return aux;
 }
@@ -175,6 +192,7 @@ void PilhaEncadeada<TipoItem>::Percorrer_Pilha(Lista<TipoItem>& lista) const {
     if (tamanho == 0) return;
 
     lista.Limpa();
+    CONTA(ana, celulas_visitadas, tamanho); CONTA(ana, saltos_ponteiro, tamanho);
     TipoCelula<TipoItem>* aux = this->topo;
     while (aux != nullptr) {
         lista.Insere_Final(aux->item);
@@ -197,4 +215,15 @@ void PilhaEncadeada<TipoItem>::Limpa() {
     while (tamanho != 0)
         Desempilha();
     topo = nullptr;
+}
+
+template<typename TipoItem>
+Analise PilhaEncadeada<TipoItem>::Get_Analise() const { return ana; }
+
+template<typename TipoItem>
+void PilhaEncadeada<TipoItem>::Zerar_Analise() { ana.Zerar(); }
+
+template<typename TipoItem>
+long long PilhaEncadeada<TipoItem>::Bytes_Usados() const {
+    return (long long)tamanho * sizeof(TipoCelula<TipoItem>);
 }

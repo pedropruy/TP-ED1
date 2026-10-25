@@ -4,7 +4,7 @@
 #include <fstream>
 
 int main() {
-    std::ifstream arq("entrada_correcao.txt");
+    std::ifstream arq("L.txt");
     if(!arq.is_open()) {
         std::cout << "Erro ao abrir arquivo de entrada\n";
         return 0;
@@ -23,6 +23,8 @@ int main() {
         try { Comando(forja, linha); }
         catch (char const* e) { std::cout << e << std::endl; }
     }
+
+    std::cout << forja.Get_Analise_Total() << std::endl;
 
     arq.close();
 

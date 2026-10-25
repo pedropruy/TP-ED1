@@ -9,7 +9,6 @@
 #include "Aventureiro.hpp"
 #include "Ordenacao.hpp"
 
-enum EstrategiaBuild { IMEDIATA, SOB_DEMANDA };
 enum M { PODER, EQUILIBRIO, SINERGIA };
 
 struct Pedido { int id_aventureiro; int id_item; };
@@ -17,12 +16,14 @@ struct Metrica { int enum_metrica; double peso; };
 struct PE { bool atualiza; double poder; double equilibrio; };
 struct Builds { bool atualiza; int valor; };
 
+#define Fila FilaEncadeada
+
 class Forja {
     public:
         // Devolvendo const std::string& para evitar cópia desnecessária de strings
-        const std::string& Nome_Item(int ind);
-        const std::string& Nome_Atributo(int ind);
-        const std::string& Nome_Aventureiro(int ind);
+        const std::string& Get_Nome_Item(int ind);
+        const std::string& Get_Nome_Atributo(int ind);
+        const std::string& Get_Nome_Aventureiro(int ind);
         char Modo(char modo); // E
         int Cadastro_Atributo(const std::string& nome); // A
         int Cadastro_Item(const std::string& nome); // I
@@ -38,6 +39,13 @@ class Forja {
         void Consulta_Recomendacao(int id_v, int n, Lista<Metrica>& metricas,
                                    Lista<Ranking>& recomendacao, bool sinergia = false); // Q
         void Imprime() const;
+
+        Analise Get_Analise_Catalogo(); 
+        Analise Get_Analise_Forja() const; 
+        Analise Get_Analise_Total(); 
+        long long Bytes_Fila() const;
+        void Zerar_Analise(); 
+        void Configurar(char _ordenacao, bool _build_imediata); // C
     private:
         Lista<Item> itens;
         Lista<Atributo> atributos;
@@ -51,7 +59,12 @@ class Forja {
         double Poder(int id_i);
         double Equilibrio(int id_i);
         double Sinergia(int id_v, int id_i, Lista<Consulta>& build, double norma_build);
-        EstrategiaBuild estrategia_atual = IMEDIATA;
+        
+        char ordenacao = 'M';   // 'I' inserção, 'M' merge, 'Q' quick
+        bool build_imediata = false;  // true: IMEDIATA; false: SOB_DEMANDA
+        mutable Analise ana;  // LEGAL, NÉ?
+        mutable Ordenacao ordem;
+        void Ordenar(Lista<Ranking>& lista);  // despacha para Insercao, MergeSort ou QuickSort
         void Obter_Build(int id_v, Lista<Consulta>& build);  // Função que LH e Q chamam
 };
 

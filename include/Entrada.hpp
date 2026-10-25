@@ -30,6 +30,10 @@ void Terminal_Consulta_Build(Forja& j, std::stringstream& ss);
 
 void Terminal_Consulta_Recomendacao(Forja& j, std::stringstream& ss);
 
+void Terminal_Configuracao(Forja& j, std::stringstream& ss);
+
+void Terminal_Imprima_Analise(Forja& j, std::stringstream& ss);
+
 void Comando(Forja& j, std::string& linha);
 
 #endif

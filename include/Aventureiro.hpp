@@ -7,7 +7,7 @@
 #include "Item.hpp"
 #include "Matriz.hpp"
 
-#define Pilha Pilha
+#define Pilha PilhaEncadeada
 class Aventureiro {
     private:
         unsigned int id;

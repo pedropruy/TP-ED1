@@ -2,6 +2,7 @@
 #define FILA_HPP
 
 #include "TipoCelula.hpp"
+#include "Analise.hpp"
 
 template<typename TipoItem>
 class Fila {
@@ -12,7 +13,11 @@ class Fila {
         TipoItem Desenfileira();
         void Imprime();
         void Limpa();
+        
+        Analise Get_Analise() const; void Zerar_Analise();
+        long long Bytes_Usados() const;
     private:
+        mutable Analise ana;
         int tamanho;
         int capacidade;
         int frente;
@@ -30,7 +35,11 @@ class FilaEncadeada {
         TipoItem Desenfileira();
         void Imprime();
         void Limpa();
+
+        Analise Get_Analise() const; void Zerar_Analise();
+        long long Bytes_Usados() const;
     private:
+        mutable Analise ana;
         int tamanho;
         TipoCelula<TipoItem>* frente;
         TipoCelula<TipoItem>* tras;

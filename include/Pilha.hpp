@@ -16,7 +16,11 @@ class Pilha {
         void Percorrer_Pilha(Lista<TipoItem>& lista) const;
         void Imprime();
         void Limpa();
+
+        Analise Get_Analise() const; void Zerar_Analise();
+        long long Bytes_Usados() const;
     private:
+        mutable Analise ana;
         bool encadeada = false;
         int tamanho;
         void Copia(const Pilha& p);
@@ -38,7 +42,11 @@ class PilhaEncadeada {
         void Percorrer_Pilha(Lista<TipoItem>& lista) const;
         void Imprime();
         void Limpa();
+        
+        Analise Get_Analise() const; void Zerar_Analise();
+        long long Bytes_Usados() const;
     private:
+        mutable Analise ana;
         int tamanho;
         void Copia(const PilhaEncadeada& p);
         TipoCelula<TipoItem>* topo;

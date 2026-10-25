@@ -41,6 +41,9 @@ int Catalogo::Get_Tamanho_Itens() const {
     return linhas;
 }
 
+Analise Catalogo::Get_Analise() { return matriz->Get_Analise(); }
+void Catalogo::Zerar_Analise() { matriz->Zerar_Analise(); }
+
 int Catalogo::Get_Celula(int id_i, int id_a) const { return matriz->Get(id_i, id_a); }
 
 void Catalogo::Set_Celula(int id_i, int id_a, int valor) { matriz->Set(id_i, id_a, valor); }

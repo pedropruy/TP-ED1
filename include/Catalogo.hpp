@@ -9,6 +9,7 @@ class Catalogo {
         char Trocar_de_Modo(char modo);
         int Get_Tamanho_Atributos() const;
         int Get_Tamanho_Itens() const;
+        Analise Get_Analise(); void Zerar_Analise();
         int Get_Celula(int id_i, int id_a) const;
         void Set_Celula(int id_i, int id_a, int valor);
         void Novo_Item(); void Novo_Atributo(); // Cresce l e c da matriz 

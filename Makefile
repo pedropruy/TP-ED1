@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++11 -Wall -fsanitize=address -g -fno-omit-frame-pointer
+CFLAGS = -std=c++11 -Wall -fsanitize=address -g -fno-omit-frame-pointer -DANALISES
 
 SRC_DIR = ./src
 INCLUDE_DIR = ./include
@@ -35,7 +35,6 @@ $(OBJ_DIR)/Matriz.o: $(SRC_DIR)/Matriz_COO.cpp $(SRC_DIR)/Matriz_CSR.cpp $(SRC_D
 	$(CC) $(CFLAGS) -c $(SRC_DIR)/Matriz_Encadeada.cpp -o $(OBJ_DIR)/Matriz_Encadeada.o
 	ld -r $(OBJ_DIR)/Matriz_COO.o $(OBJ_DIR)/Matriz_CSR.o $(OBJ_DIR)/Matriz_Encadeada.o -o $@
 	rm $(OBJ_DIR)/Matriz_COO.o $(OBJ_DIR)/Matriz_CSR.o $(OBJ_DIR)/Matriz_Encadeada.o
-
 
 $(OBJ_DIR)/Catalogo.o: $(INCLUDE_DIR)/Catalogo.hpp $(SRC_DIR)/Catalogo.cpp
 	${CC} ${CFLAGS} -c $(SRC_DIR)/Catalogo.cpp -o $(OBJ_DIR)/Catalogo.o

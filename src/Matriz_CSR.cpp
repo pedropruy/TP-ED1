@@ -8,12 +8,34 @@ MatrizCSR::MatrizCSR(int linhas_, int colunas_) : l(linhas_), c(colunas_) {
     }
 }
 
+Analise MatrizCSR::Get_Analise() const {
+    Analise a = ana;
+    a += linhas.Get_Contadores();
+    a += colunas.Get_Contadores();
+    a += valores.Get_Contadores();
+    return a;
+}
+
+void MatrizCSR::Zerar_Analise() {
+    Matriz::Zerar_Analise();
+    linhas.Zerar_Contadores();
+    colunas.Zerar_Contadores();
+    valores.Zerar_Contadores();
+}
+
+long long MatrizCSR::Bytes_Usados() const {
+    return (long long)(linhas.Get_Capacidade() + colunas.Get_Capacidade()) * sizeof(int)
+         + (long long)valores.Get_Capacidade() * sizeof(valor);
+}
+
 valor MatrizCSR::Get(int i, int j) const {
     if (i < 0 || i >= l || j < 0 || j >= c)
         throw "Posicao invalida";
 
-    for (int p = linhas.Get_Item(i); p < linhas.Get_Item(i+1); p++)
+    for (int p = linhas.Get_Item(i); p < linhas.Get_Item(i+1); p++) {
+        CONTA(ana, celulas_visitadas, 1); CONTA(ana, comparacoes_chave, 1);
         if (colunas.Get_Item(p) == j) return valores.Get_Item(p);
+    }
 
     return 0;
 }
@@ -27,14 +49,15 @@ void MatrizCSR::Set(int i, int j, valor v) {
         throw "Posicao invalida";
 
     int p = linhas.Get_Item(i);
-    while (p < linhas.Get_Item(i + 1) && colunas.Get_Item(p) < j) p++;
+    while (p < linhas.Get_Item(i + 1) && colunas.Get_Item(p) < j) {
+        CONTA(ana, celulas_visitadas, 1); CONTA(ana, comparacoes_chave, 1);
+        p++;
+    }
 
     if (p < linhas.Get_Item(i + 1) && colunas.Get_Item(p) == j) { // O elemento já existe
-        if (v == 0) RemoveElemento(i, p);
-
+        if (v == 0) Remove_Elemento(i, p);
         else valores.Set_Item(v, p);
-
-    } else if (v != 0) InsereElemento(i, j, p, v);
+    } else if (v != 0) Insere_Elemento(i, j, p, v);
 }
 
 void MatrizCSR::Adicionar_Linha() {
@@ -51,6 +74,7 @@ void MatrizCSR::Somar_Linha(int id_i, int* vetor, int sinal) {
     // Se i == i+1, então não tem valores acima de 0 na linha
     int inicio = linhas.Get_Item(id_i);
     int fim = linhas.Get_Item(id_i + 1);
+    CONTA(ana, celulas_visitadas, fim - inicio);
 
     for (int k = inicio; k < fim; k++)
         vetor[colunas.Get_Item(k)] += valores.Get_Item(k) * sinal;
@@ -64,6 +88,7 @@ void MatrizCSR::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
     // Se i == i+1, então não tem valores acima de 0 na linha
     int inicio = linhas.Get_Item(i);
     int fim = linhas.Get_Item(i + 1);
+    CONTA(ana, celulas_visitadas, fim - inicio);
 
     for (int k = inicio; k < fim; k++) {
         Consulta cons = {colunas.Get_Item(k), valores.Get_Item(k)};
@@ -76,11 +101,13 @@ void MatrizCSR::Percorrer_Coluna(int j, Lista<Consulta>& resultados) {
     resultados.Limpa();
 
     // Como o vetor é CSR, teremos que percorrer toda a matriz
+    CONTA(ana, celulas_visitadas, l); // Percorre todas as linhas
     for (int i = 0; i < l; i++) {
         int inicio = linhas.Get_Item(i);
         int fim = linhas.Get_Item(i + 1);
 
         for (int k = inicio; k < fim; k++) {
+            CONTA(ana, celulas_visitadas, 1); CONTA(ana, comparacoes_chave, 1);
             if (colunas.Get_Item(k) == j) {
                 Consulta cons = {i, valores.Get_Item(k)};
                 resultados.Insere_Final(cons);
@@ -104,6 +131,7 @@ void MatrizCSR::Converter_em_COO(Matriz& m) {
         for (int p = inicio; p < fim; p++) {
             int j = colunas.Get_Item(p);
             valor val = valores.Get_Item(p);
+            CONTA(ana, celulas_visitadas, 1);
             mo->Set(i, j, val);
         }
     }
@@ -123,6 +151,7 @@ void MatrizCSR::Converter_em_Encadeada(Matriz& m) {
         for (int p = inicio; p < fim; p++) {
             int j = colunas.Get_Item(p);
             valor val = valores.Get_Item(p);
+            CONTA(ana, celulas_visitadas, 1);
             me->Set(i, j, val);
         }
     }
@@ -130,19 +159,10 @@ void MatrizCSR::Converter_em_Encadeada(Matriz& m) {
 
 void MatrizCSR::Converter_Matriz(Matriz& m, char tipo) {
     switch (tipo) {
-        case 'T':
-            Converter_em_COO(m);
-            break;
-
-        case 'C':
-            break;
-        
-        case 'L':
-            Converter_em_Encadeada(m);
-            break;
-
-        default:
-            throw "Tipo de matriz desconhecido!";
+        case 'T': Converter_em_COO(m); break;
+        case 'C': break;
+        case 'L': Converter_em_Encadeada(m); break;
+        default: throw "Tipo de matriz desconhecido!";
     }
 }
 
@@ -158,7 +178,7 @@ void MatrizCSR::Imprime() const {
     }
 }
 
-void MatrizCSR::InsereElemento(int i, int j, int p, valor v) {
+void MatrizCSR::Insere_Elemento(int i, int j, int p, valor v) {
     // Função de Lista começa de 1, enquanto int p começa do 0
     colunas.Insere_Posicao(j, p + 1);
     valores.Insere_Posicao(v, p + 1);
@@ -166,12 +186,13 @@ void MatrizCSR::InsereElemento(int i, int j, int p, valor v) {
     tamanho++;
 
     // Soma mais 1 na lista de linhas
+    CONTA(ana, limites_atualizados, l - i);
     for (int r = i + 1; r <= l; r++) {
         linhas.Set_Item(linhas.Get_Item(r) + 1, r);
     }
 }
 
-void MatrizCSR::RemoveElemento(int i, int p) {
+void MatrizCSR::Remove_Elemento(int i, int p) {
     // Função de Lista começa de 1, enquanto int p começa do 0
     colunas.Remove_Posicao(p + 1);
     valores.Remove_Posicao(p + 1);
@@ -179,6 +200,7 @@ void MatrizCSR::RemoveElemento(int i, int p) {
     tamanho--;
 
     // Remove menos 1 na lista de linhas
+    CONTA(ana, limites_atualizados, l - i);
     for (int r = i + 1; r <= l; r++) {
         linhas.Set_Item(linhas.Get_Item(r) - 1, r);
     }

@@ -51,6 +51,15 @@ void Fila<TipoItem>::Limpa(){
 }
 
 template<typename TipoItem>
+Analise Fila<TipoItem>::Get_Analise() const { return ana; }
+
+template<typename TipoItem>
+void Fila<TipoItem>::Zerar_Analise() { ana.Zerar(); }
+
+template<typename TipoItem>
+long long Fila<TipoItem>::Bytes_Usados() const { return (long long)capacidade * sizeof(TipoItem); }
+
+template<typename TipoItem>
 void Fila<TipoItem>::Dobrar_Tamanho(){
     int nova_capacidade = capacidade*2;
     TipoItem* novo_itens = new TipoItem[nova_capacidade]; 
@@ -62,6 +71,7 @@ void Fila<TipoItem>::Dobrar_Tamanho(){
         if (iterador == capacidade) iterador = 0; 
     }
     
+    CONTA(ana, alocacoes, 1); CONTA(ana, liberacoes, 1); CONTA(ana, copiados, tamanho);
     delete[] itens;
     capacidade = nova_capacidade;
     itens = novo_itens;
@@ -87,6 +97,7 @@ template<typename TipoItem>
 void FilaEncadeada<TipoItem>::Enfileira(const TipoItem& item) {
     TipoCelula<TipoItem>* nova;
     nova = new TipoCelula<TipoItem>();
+    CONTA(ana, alocacoes, 1);
     nova->item = item;
     tras->prox = nova;
     tras = nova;
@@ -103,6 +114,7 @@ TipoItem FilaEncadeada<TipoItem>::Desenfileira() {
     aux = frente;
     frente = frente->prox;
     delete aux;
+    CONTA(ana, liberacoes, 1);
     tamanho--;
     return item;
 }
@@ -124,8 +136,20 @@ void FilaEncadeada<TipoItem>::Limpa(){
     while (aux != nullptr) {
         frente->prox = aux->prox;
         delete aux;
+        CONTA(ana, liberacoes, 1);
         aux = frente->prox;
     }
     tamanho = 0;
     tras = frente;
+}
+
+template<typename TipoItem>
+Analise FilaEncadeada<TipoItem>::Get_Analise() const { return ana; }
+
+template<typename TipoItem>
+void FilaEncadeada<TipoItem>::Zerar_Analise() { ana.Zerar(); }
+
+template<typename TipoItem>
+long long FilaEncadeada<TipoItem>::Bytes_Usados() const {
+    return (long long)(tamanho + 1) * sizeof(TipoCelula<TipoItem>); // +1: sentinela
 }

@@ -29,8 +29,8 @@ void Terminal_Modificador(Forja& j, std::stringstream& ss) {
     int id_i, id_a, valor;
     ss >> id_i; ss >> id_a; ss >> valor;
     j.Definir_Modificador(id_i, id_a, valor);
-    std::cout << "M " << j.Nome_Item(id_i) << " " 
-              << j.Nome_Atributo(id_a) << " " << valor << std::endl;
+    std::cout << "M " << j.Get_Nome_Item(id_i) << " " 
+              << j.Get_Nome_Atributo(id_a) << " " << valor << std::endl;
 }
 
 void Terminal_Aventureiro(Forja& j, std::stringstream& ss) {
@@ -66,9 +66,9 @@ void Terminal_Desequipar(Forja& j, std::stringstream& ss) {
     int id_v; ss >> id_v;
     int id_i = j.Desequipar(id_v);
     if (id_i == -1)
-        std::cout << "D " << j.Nome_Aventureiro(id_v) << " VAZIO" << std::endl;
+        std::cout << "D " << j.Get_Nome_Aventureiro(id_v) << " VAZIO" << std::endl;
     else
-        std::cout << "D " << j.Nome_Aventureiro(id_v) << " " << j.Nome_Item(id_i) << std::endl;
+        std::cout << "D " << j.Get_Nome_Aventureiro(id_v) << " " << j.Get_Nome_Item(id_i) << std::endl;
 }
 
 void Terminal_Consulta_Item(Forja& j, std::stringstream& ss) {
@@ -76,7 +76,7 @@ void Terminal_Consulta_Item(Forja& j, std::stringstream& ss) {
 
     Lista<Consulta> atributos;
     j.Consulta_Item(id_i, atributos);
-    std::cout << "LI " << j.Nome_Item(id_i);
+    std::cout << "LI " << j.Get_Nome_Item(id_i);
 
     if (atributos.Get_Tamanho() == 0) {
         std::cout << " VAZIO" << std::endl;
@@ -96,7 +96,7 @@ void Terminal_Consulta_Atributo(Forja& j, std::stringstream& ss) {
 
     Lista<Consulta> itens;
     j.Consulta_Atributo(id_a, itens);
-    std::cout << "LA " << j.Nome_Atributo(id_a);
+    std::cout << "LA " << j.Get_Nome_Atributo(id_a);
 
     if (itens.Get_Tamanho() == 0) {
         std::cout << " VAZIO" << std::endl;
@@ -117,7 +117,7 @@ void Terminal_Consulta_Atributo_Intervalo(Forja& j, std::stringstream& ss) {
 
     Lista<Consulta> itens;
     j.Consulta_Atributo_Intervalo(id_a, val_min, val_max, itens);
-    std::cout << "LF " << j.Nome_Atributo(id_a);
+    std::cout << "LF " << j.Get_Nome_Atributo(id_a);
 
     if (itens.Get_Tamanho() == 0) {
         std::cout << " VAZIO" << std::endl;
@@ -137,7 +137,7 @@ void Terminal_Consulta_Build(Forja& j, std::stringstream& ss) {
 
     Lista<Consulta> atributos;
     j.Consulta_Build(id_v, atributos);
-    std::cout << "LH " << j.Nome_Aventureiro(id_v);
+    std::cout << "LH " << j.Get_Nome_Aventureiro(id_v);
 
     if (atributos.Get_Tamanho() == 0) {
         std::cout << " VAZIO" << std::endl;
@@ -183,6 +183,22 @@ void Terminal_Consulta_Recomendacao(Forja& j, std::stringstream& ss) {
     }
 }
 
+void Terminal_Configuracao(Forja& j, std::stringstream& ss) {
+    char ordenacao, modo_build;
+    ss >> ordenacao; ss >> modo_build;
+
+    if ((ordenacao == 'I' || ordenacao == 'M' || ordenacao == 'Q') &&
+        (modo_build == 'I' || modo_build == 'S')) {
+        bool imediata = (modo_build == 'I') ? true : false;
+        j.Configurar(ordenacao, imediata);
+    }
+        
+}
+
+void Terminal_Imprima_Analise(Forja& j, std::stringstream& ss) {
+    std::cout << j.Get_Analise_Total() << std::endl;
+}
+
 void Comando(Forja& j, std::string& linha) {
     std::string token; 
     std::stringstream ss(linha);
@@ -201,5 +217,8 @@ void Comando(Forja& j, std::string& linha) {
     else if (token == "LF") Terminal_Consulta_Atributo_Intervalo(j, ss);
     else if (token == "LH") Terminal_Consulta_Build(j, ss);
     else if (token == "Q") Terminal_Consulta_Recomendacao(j, ss);
+    else if (token == "C") Terminal_Configuracao(j, ss);
+    else if (token == "P") Terminal_Imprima_Analise(j, ss);
     else std::cout << "Comando invalido!" << std::endl;
+
 }

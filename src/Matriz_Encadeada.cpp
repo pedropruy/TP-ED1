@@ -21,6 +21,26 @@ MatrizEncadeada::~MatrizEncadeada() {
     for (int j = 0; j < cabCol.Get_Tamanho(); j++) delete cabCol.Get_Item(j);
 }
 
+Analise MatrizEncadeada::Get_Analise() const {
+    Analise a = ana;
+    a += cabLin.Get_Contadores();
+    a += cabCol.Get_Contadores();
+    return a;
+}
+
+void MatrizEncadeada::Zerar_Analise() {
+    Matriz::Zerar_Analise();
+    cabLin.Zerar_Contadores();
+    cabCol.Zerar_Contadores();
+}
+
+long long MatrizEncadeada::Bytes_Usados() const {
+    // células reais + células cabeça de linha e de coluna + os dois vetores de ponteiros
+    long long celulas = (long long)tamanho + cabLin.Get_Tamanho() + cabCol.Get_Tamanho();
+    return celulas * sizeof(Celula)
+         + (long long)(cabLin.Get_Capacidade() + cabCol.Get_Capacidade()) * sizeof(Celula*);
+}
+
 valor MatrizEncadeada::Get(int i, int j) const {
     if (i < 0 || i >= cabLin.Get_Tamanho()
      || j < 0 || j >= cabCol.Get_Tamanho()) throw "Indice invalido!";
@@ -46,11 +66,13 @@ void MatrizEncadeada::Set(int i, int j, valor v) {
         antL->proxLin = p->proxLin; // desliga da linha
         antC->proxCol = p->proxCol; // desliga da coluna
         delete p; tamanho --;
+        CONTA(ana, liberacoes, 1);
         return;
     }
     if (v == 0) return;
     antC = AntColuna(i, j);
     Celula* nova = new Celula{i, j, v, antL->proxLin, antC->proxCol};
+    CONTA(ana, alocacoes, 1);
     antL->proxLin = nova; // liga na linha
     antC->proxCol = nova; // liga na coluna
     tamanho++;
@@ -72,7 +94,10 @@ int MatrizEncadeada::Soma_Coluna(int j) const {
     Celula* p = cabCol.Get_Item(j)->proxCol; 
     
     // Desce pela coluna somando os valores
-    while (p != nullptr) { total += p->val; p = p->proxCol; }
+    while (p != nullptr) {
+        CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
+        total += p->val; p = p->proxCol;
+    }
     
     return total;
 }
@@ -86,6 +111,7 @@ valor* MatrizEncadeada::Produto(const valor* v, int dim_v) {
         vetor_res[i] = 0;
         Celula* p = cabLin.Get_Item(i)->proxLin;
         while (p != nullptr) {
+            CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
             vetor_res[i] += p->val * v[p->col];
             p = p->proxLin;
         }
@@ -96,6 +122,7 @@ valor* MatrizEncadeada::Produto(const valor* v, int dim_v) {
 void MatrizEncadeada::Somar_Linha(int i, int* vetor, int sinal) {
     Celula* p = cabLin.Get_Item(i)->proxLin;
     while (p != nullptr) {
+        CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
         vetor[p->col] += (p->val * sinal);
         p = p->proxLin;
     }
@@ -104,6 +131,7 @@ void MatrizEncadeada::Somar_Linha(int i, int* vetor, int sinal) {
 void MatrizEncadeada::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
     Celula* p = cabLin.Get_Item(i)->proxLin;
     while (p != nullptr) {
+        CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
         Consulta c = {p->col, p->val};
         resultados.Insere_Final(c);
         p = p->proxLin;
@@ -113,6 +141,7 @@ void MatrizEncadeada::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
 void MatrizEncadeada::Percorrer_Coluna(int j, Lista<Consulta>& resultados) {
     Celula* p = cabCol.Get_Item(j)->proxCol;
     while (p != nullptr) {
+        CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
         Consulta c = {p->lin, p->val};
         resultados.Insere_Final(c);
         p = p->proxCol;
@@ -136,6 +165,7 @@ void MatrizEncadeada::Converter_em_COO(Matriz& m) {
     for (int i = 0; i < cabLin.Get_Tamanho(); i++)
         // Acesso proxLin por item da linha
         for (Celula* p = cabLin.Get_Item(i)->proxLin; p != nullptr; p = p->proxLin) {
+            CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
             aux.lin = p->lin; aux.col = p->col; aux.val = p->val;
             mo->tripletas.Insere_Final(aux);
         }
@@ -158,9 +188,11 @@ void MatrizEncadeada::Converter_em_CSR(Matriz& m) {
 
     for (int i = 0; i < cabLin.Get_Tamanho(); i++) {
         for (Celula* p = cabLin.Get_Item(i)->proxLin; p != nullptr; p = p->proxLin) {
+            CONTA(ana, celulas_visitadas, 1); CONTA(ana, saltos_ponteiro, 1);
             mc->colunas.Insere_Final(p->col);
             mc->valores.Insere_Final(p->val);
             mc->tamanho++;
+            CONTA(mc->ana, limites_atualizados, mc->l - p->lin);
             for (int r = p->lin + 1; r <= mc->l; r++)
                 mc->linhas.Set_Item(mc->linhas.Get_Item(r) + 1, r);
         }
@@ -169,19 +201,10 @@ void MatrizEncadeada::Converter_em_CSR(Matriz& m) {
 
 void MatrizEncadeada::Converter_Matriz(Matriz& m, char tipo) {
     switch (tipo) { 
-        case 'T':
-            Converter_em_COO(m);
-            break;
-        
-        case 'C':
-            Converter_em_CSR(m);
-            break;
-
-        case 'L':
-            break;
-
-        default:
-            break;
+        case 'T': Converter_em_COO(m); break;
+        case 'C': Converter_em_CSR(m); break;
+        case 'L': break;
+        default: throw "Tipo de matriz desconhecido!";
     }
 }
 
@@ -200,14 +223,18 @@ void MatrizEncadeada::Imprime() const {
 
 Celula* MatrizEncadeada::AntLinha(int i, int j) const {
     Celula* p = cabLin.Get_Item(i);
-    while (p->proxLin != nullptr&& p->proxLin->col < j)
+    while (p->proxLin != nullptr&& p->proxLin->col < j) {
+        CONTA(ana, saltos_ponteiro, 1); CONTA(ana, comparacoes_chave, 1);
         p = p->proxLin;
+    }
     return p;
 }
 
 Celula* MatrizEncadeada::AntColuna(int i, int j) const {
     Celula* p = cabCol.Get_Item(j);
-    while (p->proxCol != nullptr && p->proxCol->lin < i)
+    while (p->proxCol != nullptr && p->proxCol->lin < i) {
+        CONTA(ana, saltos_ponteiro, 1); CONTA(ana, comparacoes_chave, 1);
         p = p->proxCol;
+    }
     return p;
 }

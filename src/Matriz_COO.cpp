@@ -1,9 +1,25 @@
 #include "../include/Matriz.hpp"
 
-Matriz::Matriz() {};
-Matriz::~Matriz() {};
+Matriz::Matriz() {}
+Matriz::~Matriz() {}
+
+void Matriz::Zerar_Analise() { ana.Zerar(); }
 
 MatrizCOO::MatrizCOO(int linhas_, int colunas_) : l(linhas_), c(colunas_) {}
+ 
+Analise MatrizCOO::Get_Analise() const {
+    Analise a = ana;
+    a += tripletas.Get_Contadores(); // deslocamentos e crescimento do vetor
+    return a;
+}
+ 
+void MatrizCOO::Zerar_Analise() {
+    Matriz::Zerar_Analise(); tripletas.Zerar_Contadores();
+}
+ 
+long long MatrizCOO::Bytes_Usados() const {
+    return (long long)tripletas.Get_Capacidade() * sizeof(Tripleta);
+}
 
 valor MatrizCOO::Get(int i, int j) const {
     if (i < 0 || i >= l || j < 0 || j >= c) throw "Posicao invalida!";
@@ -43,6 +59,7 @@ void MatrizCOO::Somar_Linha(int i, int* vetor, int sinal) {
     Tripleta t;
     for (int k = pos-1; k < tripletas.Get_Tamanho(); k++) {
         t = tripletas.Get_Item(k);
+        CONTA(ana, celulas_visitadas, 1);
         
         // Como o vetor é ordenado, se a primeira posição é maior então linha é vazia
         if (t.lin > i) break; 
@@ -59,6 +76,7 @@ void MatrizCOO::Percorrer_Linha(int i, Lista<Consulta>& resultados) {
     Tripleta t;
     for (int k = pos-1; k < tripletas.Get_Tamanho(); k++) {
         t = tripletas.Get_Item(k);
+        CONTA(ana, celulas_visitadas, 1);
         
         // Como o vetor é ordenado, se a primeira posição é maior então linha é vazia
         if (t.lin > i) break; 
@@ -76,6 +94,7 @@ void MatrizCOO::Percorrer_Coluna(int j, Lista<Consulta>& resultados) {
     // Não consegui achar caminhos mais simples, teremos que varrer todo o vetor
     for (int k = 0; k < tripletas.Get_Tamanho(); k++) {
         t = tripletas.Get_Item(k);
+        CONTA(ana, celulas_visitadas, 1);
         
         // Só filtra os itens que batem com a coluna 'j'
         if (t.col == j) {
@@ -100,6 +119,7 @@ void MatrizCOO::Converter_em_CSR(Matriz& m) {
 
     for (int k = 0; k < this->tripletas.Get_Tamanho(); k++) {
         Tripleta t = tripletas.Get_Item(k);
+        CONTA(ana, celulas_visitadas, 1);
         mc->Set(t.lin, t.col, t.val);
     }
 }
@@ -126,6 +146,8 @@ void MatrizCOO::Converter_em_Encadeada(Matriz& m) {
         const Tripleta& tri = origem.Get_Item(i);
                 
         Celula* nova = new Celula{tri.lin, tri.col, tri.val, nullptr, nullptr};
+        CONTA(ana, celulas_visitadas, 1);
+        CONTA(me->ana, alocacoes, 1);
         
         // ASSOCIAÇÃO POR LINHA
         if (tri.lin != linAtual) {
@@ -148,19 +170,10 @@ void MatrizCOO::Converter_em_Encadeada(Matriz& m) {
 // Deve exigir que a matriz m seja recém-construida
 void MatrizCOO::Converter_Matriz(Matriz& m, char tipo) {
     switch (tipo) { 
-        case 'T':
-            break;
-        
-        case 'C':
-            Converter_em_CSR(m);
-            break;
-
-        case 'L':
-            Converter_em_Encadeada(m);
-            break;
-
-        default:
-            break;
+        case 'T': break;
+        case 'C': Converter_em_CSR(m); break;
+        case 'L': Converter_em_Encadeada(m); break;
+        default: throw "Tipo de matriz desconhecido!";
     }
 }
 
@@ -184,6 +197,7 @@ int MatrizCOO::Busca_Binaria(int i, int j, bool& achou) const {
     while (esq <= dir) {
         meio = esq + (dir - esq) / 2;
         Tripleta t = tripletas.Get_Item(meio-1);
+        CONTA(ana, comparacoes_chave, 1);
         
         // Item está exatamente na posição meio
         if (t.lin == i && t.col == j) { achou = true; return meio; }

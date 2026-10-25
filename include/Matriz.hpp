@@ -6,8 +6,6 @@ typedef int valor;
 
 // A implementação das matrizes irá utilizar lin = id_item, col = id_atributo, val = modificador
 
-// Tem que fazer construtores de cópia e associação com =delete para bloquear
-
 struct Consulta {int id_objeto; int valor; };
 class Matriz {
     public:
@@ -22,10 +20,18 @@ class Matriz {
         virtual void Percorrer_Coluna(int j, Lista<Consulta>& resultados) = 0;
         virtual void Converter_Matriz(Matriz& m, char tipo) = 0;
         virtual void Imprime() const = 0;
+ 
+        virtual Analise Get_Analise() const = 0;
+        virtual void Zerar_Analise();
+        // Bytes reservados pela estrutura (capacidade das Listas, células alocadas)
+        virtual long long Bytes_Usados() const = 0;
+ 
+    protected:
+        mutable Analise ana; // mutable para poder ser alterado em funções const
 };
-
+ 
 struct Tripleta { int lin, col; valor val; };
-
+ 
 class MatrizEncadeada; // Aqui só pro compilador não reclamar!
 class MatrizCOO : public Matriz {
     public:
@@ -40,6 +46,9 @@ class MatrizCOO : public Matriz {
         void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
         void Converter_Matriz(Matriz& m, char tipo) override;
         void Imprime() const override;
+        Analise Get_Analise() const override;
+        void Zerar_Analise() override;
+        long long Bytes_Usados() const override;
     private:
         int l, c;    // dimensoes da matriz representada
         Lista<Tripleta> tripletas; // Todos as variáveis acima, Lista e Tripleta já armazenam
@@ -51,8 +60,8 @@ class MatrizCOO : public Matriz {
         void Converter_em_Encadeada(Matriz& m);
         friend class MatrizEncadeada; friend class MatrizCSR;
 };
-
-
+ 
+ 
 class MatrizCSR : public Matriz {
     public:
         MatrizCSR(int linhas_, int colunas_);
@@ -65,25 +74,28 @@ class MatrizCSR : public Matriz {
         void Percorrer_Coluna(int j, Lista<Consulta>& resultados) override;
         void Converter_Matriz(Matriz& m, char tipo) override;
         void Imprime() const override;
+        Analise Get_Analise() const override;
+        void Zerar_Analise() override;
+        long long Bytes_Usados() const override;
     private:
         int l, c, tamanho;
         Lista<int> linhas; // l+1 posicoes: linha i ocupa [linhas[i], linhas[i+1])
         Lista<int> colunas; // tamanho posicoes
         Lista<valor> valores; // tamanho posicoes
-        void InsereElemento(int i, int j, int p, valor v); // abre a posicao p na linha i
-        void RemoveElemento(int i, int p);
+        void Insere_Elemento(int i, int j, int p, valor v); // abre a posicao p na linha i
+        void Remove_Elemento(int i, int p);
         void Converter_em_COO(Matriz& m);
         void Converter_em_Encadeada(Matriz& m);
         friend class MatrizCOO; friend class MatrizEncadeada;
 };
-
+ 
 struct Celula {
     int lin, col;
     valor val;
     Celula* proxLin;  // proxima celula na mesma linha (coluna maior)
     Celula* proxCol;  // proxima celula na mesma coluna (linha maior)
 };
-
+ 
 class MatrizEncadeada : public Matriz {
     public:
         MatrizEncadeada(int linhas, int colunas); ~MatrizEncadeada();
@@ -98,6 +110,9 @@ class MatrizEncadeada : public Matriz {
         valor* Produto(const valor* v, int dim_v);
         void Converter_Matriz(Matriz& m, char tipo) override;
         void Imprime() const override;
+        Analise Get_Analise() const override;
+        void Zerar_Analise() override;
+        long long Bytes_Usados() const override;
     private:
         // Reorganizar a implementação para usar Lista
         // contadores l e c foram removidos pois Lista já armazena esses valores
