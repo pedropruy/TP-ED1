@@ -40,10 +40,13 @@ class Forja {
                                    Lista<Ranking>& recomendacao, bool sinergia = false); // Q
         void Imprime() const;
 
-        Analise Get_Analise_Catalogo(); 
+        Analise Get_Analise_Catalogo();
+        long long Get_Bytes_Matriz(); 
         Analise Get_Analise_Forja() const; 
+        Analise Get_Analise_Ordenacao() const; 
         Analise Get_Analise_Total(); 
-        long long Bytes_Fila() const;
+        Analise Get_Analise_Pilha();
+        Analise Get_Analise_Fila();
         void Zerar_Analise(); 
         void Configurar(char _ordenacao, bool _build_imediata); // C
     private:
@@ -60,9 +63,11 @@ class Forja {
         double Equilibrio(int id_i);
         double Sinergia(int id_v, int id_i, Lista<Consulta>& build, double norma_build);
         
-        char ordenacao = 'M';   // 'I' inserção, 'M' merge, 'Q' quick
+        char ordenacao = 'Q';   // 'I' inserção, 'M' merge, 'Q' quick
         bool build_imediata = false;  // true: IMEDIATA; false: SOB_DEMANDA
         mutable Analise ana;  // LEGAL, NÉ?
+        long long Pico_Bytes = 0, Total_Bytes_Fila = 0;
+        unsigned int Z = 0;
         mutable Ordenacao ordem;
         void Ordenar(Lista<Ranking>& lista);  // despacha para Insercao, MergeSort ou QuickSort
         void Obter_Build(int id_v, Lista<Consulta>& build);  // Função que LH e Q chamam

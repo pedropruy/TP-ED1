@@ -43,6 +43,7 @@ int Catalogo::Get_Tamanho_Itens() const {
 
 Analise Catalogo::Get_Analise() { return matriz->Get_Analise(); }
 void Catalogo::Zerar_Analise() { matriz->Zerar_Analise(); }
+long long Catalogo::Bytes_Usados() { return matriz->Bytes_Usados(); }
 
 int Catalogo::Get_Celula(int id_i, int id_a) const { return matriz->Get(id_i, id_a); }
 

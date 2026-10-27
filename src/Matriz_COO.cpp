@@ -122,6 +122,7 @@ void MatrizCOO::Converter_em_CSR(Matriz& m) {
         CONTA(ana, celulas_visitadas, 1);
         mc->Set(t.lin, t.col, t.val);
     }
+    DEFINE_VAR(mc->ana, pico_conversao, Bytes_Usados());
 }
 
 void MatrizCOO::Converter_em_Encadeada(Matriz& m) {
@@ -164,6 +165,8 @@ void MatrizCOO::Converter_em_Encadeada(Matriz& m) {
         ultCol[tri.col] = nova; // Atualiza quem é a última coluna
     }
     me->tamanho = tripletas.Get_Tamanho();
+    
+    DEFINE_VAR(me->ana, pico_conversao, Bytes_Usados());
     delete[] ultCol;
 }
 

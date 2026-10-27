@@ -22,7 +22,9 @@ const std::string& Forja::Get_Nome_Aventureiro(int ind) {
 }
 
 Analise Forja::Get_Analise_Catalogo() { return catalogo.Get_Analise(); }
+long long Forja::Get_Bytes_Matriz() { return catalogo.Bytes_Usados(); }
 Analise Forja::Get_Analise_Forja() const { return ana; }
+Analise Forja::Get_Analise_Ordenacao() const { return ordem.ana_ord; } 
 
 Analise Forja::Get_Analise_Total() {
     Analise total = catalogo.Get_Analise();
@@ -32,7 +34,28 @@ Analise Forja::Get_Analise_Total() {
     return total;
 }
 
-long long Forja::Bytes_Fila() const { return encomendas.Bytes_Usados(); }
+Analise Forja::Get_Analise_Pilha() {
+    Analise total;
+    long long total_Bytes = 0;
+    for (int i = 0; i < aventureiros.Get_Tamanho(); i++) {
+        Aventureiro& a = aventureiros.Get_Item(i);
+        total_Bytes += a.Get_Bytes_Usados();
+        total += a.Get_Analise_Build();
+    }
+
+    double media_Bytes = total_Bytes / aventureiros.Get_Tamanho();
+    total /= (long long)aventureiros.Get_Tamanho();
+
+    std::cout << "Media de Bytes = " << media_Bytes << std::endl;
+    return total;
+}
+
+Analise Forja::Get_Analise_Fila() {
+    long long Media_Bytes = Total_Bytes_Fila / Z;
+    std::cout << "Media de Bytes = " << Media_Bytes << std::endl; 
+    std::cout << "Pico de Bytes = " << Pico_Bytes << std::endl; 
+    return encomendas.Get_Analise();
+}
 
 void Forja::Zerar_Analise() {
     catalogo.Zerar_Analise();
@@ -112,6 +135,10 @@ int Forja::Turnos_de_Trabalho(int turnos, Lista<Pedido>& atendidas) {
     if (turnos < 0) throw "Numero de turnos invalidos!";
     Pedido p;
     int forjadas = 0;
+
+    long long Bytes_Atual = encomendas.Bytes_Usados();
+    if (Bytes_Atual > Pico_Bytes) Pico_Bytes = Bytes_Atual;
+    Total_Bytes_Fila += Bytes_Atual; Z++;
 
     Lista<Consulta> lista;
     while (forjadas < turnos && encomendas.Get_Tamanho() > 0) {

@@ -135,6 +135,8 @@ void MatrizCSR::Converter_em_COO(Matriz& m) {
             mo->Set(i, j, val);
         }
     }
+    
+    DEFINE_VAR(mo->ana, pico_conversao, Bytes_Usados());
 }
 
 void MatrizCSR::Converter_em_Encadeada(Matriz& m) {
@@ -155,6 +157,8 @@ void MatrizCSR::Converter_em_Encadeada(Matriz& m) {
             me->Set(i, j, val);
         }
     }
+    
+    DEFINE_VAR(me->ana, pico_conversao, Bytes_Usados());
 }
 
 void MatrizCSR::Converter_Matriz(Matriz& m, char tipo) {

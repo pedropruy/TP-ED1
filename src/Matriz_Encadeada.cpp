@@ -169,6 +169,8 @@ void MatrizEncadeada::Converter_em_COO(Matriz& m) {
             aux.lin = p->lin; aux.col = p->col; aux.val = p->val;
             mo->tripletas.Insere_Final(aux);
         }
+
+    DEFINE_VAR(mo->ana, pico_conversao, Bytes_Usados());
 }
 
 void MatrizEncadeada::Converter_em_CSR(Matriz& m) {
@@ -197,6 +199,8 @@ void MatrizEncadeada::Converter_em_CSR(Matriz& m) {
                 mc->linhas.Set_Item(mc->linhas.Get_Item(r) + 1, r);
         }
     }
+    
+    DEFINE_VAR(mc->ana, pico_conversao, Bytes_Usados());
 }
 
 void MatrizEncadeada::Converter_Matriz(Matriz& m, char tipo) {

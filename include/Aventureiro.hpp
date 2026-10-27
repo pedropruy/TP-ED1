@@ -7,7 +7,7 @@
 #include "Item.hpp"
 #include "Matriz.hpp"
 
-#define Pilha PilhaEncadeada
+#define Pilha Pilha
 class Aventureiro {
     private:
         unsigned int id;
@@ -19,6 +19,7 @@ class Aventureiro {
         unsigned int Get_Id() const;
         const std::string& Get_Nome() const;
         int Get_Tamanho_Build() const;
+        Analise Get_Analise_Build(); long long Get_Bytes_Usados();
         void Copia_Build(Lista<unsigned int>& lista) const;
         void Copia_Atributo_Build(Lista<Consulta>& lista) const;
         void Set_Id(unsigned int _id);

@@ -8,6 +8,9 @@ unsigned int Aventureiro::Get_Id() const { return id; }
 const std::string& Aventureiro::Get_Nome() const { return nome; }
 int Aventureiro::Get_Tamanho_Build() const { return build.Get_Tamanho(); }
 
+Analise Aventureiro::Get_Analise_Build() { return build.Get_Analise(); }
+long long Aventureiro::Get_Bytes_Usados() { return build.Bytes_Usados(); }
+
 void Aventureiro::Copia_Build(Lista<unsigned int>& lista) const { build.Percorrer_Pilha(lista); }
 void Aventureiro::Copia_Atributo_Build(Lista<Consulta>& lista) const { 
     lista.Limpa();

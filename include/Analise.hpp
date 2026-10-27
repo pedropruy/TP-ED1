@@ -14,6 +14,7 @@ struct Analise {
     long long liberacoes = 0; // delete de célula / vetor antigo liberado
     long long comparacoes_ord = 0; // comparações feitas pelas ordenações (Q, LF)
     long long movimentos_ord = 0; // movimentações feitas pelas ordenações
+    long long pico_conversao = 0; // momento mais alto de bytes na conversao
  
     void Zerar() { *this = Analise(); }
  
@@ -28,6 +29,22 @@ struct Analise {
         liberacoes += a.liberacoes;
         comparacoes_ord += a.comparacoes_ord;
         movimentos_ord += a.movimentos_ord;
+        pico_conversao += a.pico_conversao;
+        return *this;
+    }
+
+    Analise& operator/=(const long long num) {
+        celulas_visitadas /= num;
+        comparacoes_chave /= num;
+        saltos_ponteiro /= num;
+        deslocados /= num;
+        copiados /= num;
+        limites_atualizados /= num;
+        alocacoes /= num;
+        liberacoes /= num;
+        comparacoes_ord /= num;
+        movimentos_ord /= num;
+        pico_conversao /= num;
         return *this;
     }
  
@@ -43,6 +60,7 @@ struct Analise {
         r.liberacoes = liberacoes - a.liberacoes;
         r.comparacoes_ord = comparacoes_ord - a.comparacoes_ord;
         r.movimentos_ord = movimentos_ord - a.movimentos_ord;
+        r.pico_conversao = pico_conversao - a.pico_conversao;
         return r;
     }
 
@@ -56,7 +74,8 @@ struct Analise {
            << "Quantas alocacoes:    " << a.alocacoes << std::endl
            << "Quantas liberacoes:   " << a.liberacoes << std::endl
            << "Comparacoes (ord):    " << a.comparacoes_ord << std::endl
-           << "Movimentos (ord):     " << a.movimentos_ord;
+           << "Movimentos (ord):     " << a.movimentos_ord << std::endl
+           << "Pico de Bytes:        " << a.pico_conversao;
         return os;
     }
 };
@@ -64,9 +83,11 @@ struct Analise {
 #ifdef ANALISES
     #define CONTA(obj, campo, n) ((obj).campo += (n))
     #define CONTA_VAR(var, n) ((var) += (n))
+    #define DEFINE_VAR(obj, campo, n) ((obj).campo += (n))
 #else
     #define CONTA(obj, campo, n) ((void)0)
     #define CONTA_VAR(var, n) ((void)0)
+    #define DEFINE_VAR(obj, campo, n) ((void)0)
 #endif
  
 #endif

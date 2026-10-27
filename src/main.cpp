@@ -1,20 +1,21 @@
-#include "../include/Forja.hpp"
 #include "../include/Entrada.hpp"
-#include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+#include <chrono>
+
+// Definição da estrutura para organizar os lotes de teste
+struct LoteTestes {
+    int peso;
+    std::vector<std::string> arquivos;
+};
 
 int main() {
-    std::ifstream arq("L.txt");
-    if(!arq.is_open()) {
-        std::cout << "Erro ao abrir arquivo de entrada\n";
-        return 0;
-    }
 
     Forja forja;
 
     std::string linha;   
-    //while(std::getline(std::cin, linha)) { 
-    while(std::getline(arq, linha)) {  
+    while(std::getline(std::cin, linha)) {
         if (!linha.empty() && linha.back() == '\r')
             linha.pop_back();
 
@@ -23,10 +24,6 @@ int main() {
         try { Comando(forja, linha); }
         catch (char const* e) { std::cout << e << std::endl; }
     }
-
-    std::cout << forja.Get_Analise_Total() << std::endl;
-
-    arq.close();
 
     return 0;
 }

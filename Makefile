@@ -1,5 +1,6 @@
 CC = g++
-CFLAGS = -std=c++11 -Wall -fsanitize=address -g -fno-omit-frame-pointer -DANALISES
+CFLAGS = -std=c++11 -Wall -fsanitize=address -g -fno-omit-frame-pointer 
+# Adicione essa flag ao final de CFLAGS para adicionar a coleta de dados no código -DANALISES
 
 SRC_DIR = ./src
 INCLUDE_DIR = ./include
